@@ -5,12 +5,11 @@ using UnityEngine;
 public class Paddle : MonoBehaviour
 {
     public bool isPlayer1;
-    public float speed;
-    public Rigidbody2D rb;
-    public Vector3 startPosition;
     
+    public Rigidbody2D rb;
+    public Vector3 startPosition;    
     private float movement;
-
+    private float speed = 10;
     // Start is called before the first frame update
     void Start()
     {
