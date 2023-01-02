@@ -74,10 +74,8 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("Opponent wait for data");
             var bytes = new byte[1024];
             var bytesCount = serverClient.socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
-            Debug.Log("Opponent recive data: " + bytes.ToString());
             try
             {
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
