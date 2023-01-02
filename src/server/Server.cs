@@ -44,17 +44,15 @@ public class SocketListener
             {
                 bytes = new byte[1024];
                 int bytesRec = handler.Receive(bytes);
-                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
                 if (data.IndexOf("<EOF>") > -1)
                 {
                     handler.Shutdown(SocketShutdown.Send);
                 }
                 Console.WriteLine("Text received : {0}", Encoding.ASCII.GetString(bytes, 0, bytesRec));
-                byte[] response_msg = Encoding.ASCII.GetBytes("Habe ich bekommen\n");
-                handler.Send(response_msg);    
+                byte[] response_msg = Encoding.ASCII.GetBytes(data);
+                handler.Send(response_msg);
             }
-
-            Console.WriteLine("Text received : {0}", data);
 
             byte[] msg = Encoding.ASCII.GetBytes(data);
             handler.Send(msg);

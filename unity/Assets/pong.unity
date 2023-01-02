@@ -191,6 +191,7 @@ PolygonCollider2D:
     - - {x: 0, y: 0.5773587}
       - {x: -0.5, y: -0.28866667}
       - {x: 0.5, y: -0.28866667}
+  m_UseDelaunayMesh: 0
 --- !u!212 &200735617
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -528,6 +529,7 @@ MonoBehaviour:
   player1Goal: {fileID: 1488085024}
   player2Paddle: {fileID: 720117785}
   player2Goal: {fileID: 501054325}
+  unityMainThreadDispatcher: {fileID: 0}
   player1Text: {fileID: 935243626}
   player2Text: {fileID: 816467437}
   player1Score: 0
@@ -594,7 +596,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d502fd210713c54a82e51f0a5e01233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPlayer1: 0
+  opponent: 1
+  gameManager: {fileID: 657072061}
   rb: {fileID: 720117788}
   startPosition: {x: 0, y: 0, z: 0}
 --- !u!50 &720117788
@@ -868,7 +871,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d502fd210713c54a82e51f0a5e01233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isPlayer1: 1
+  opponent: 0
+  gameManager: {fileID: 657072061}
   rb: {fileID: 820500879}
   startPosition: {x: 0, y: 0, z: 0}
 --- !u!50 &820500879
@@ -990,7 +994,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -1231,6 +1234,7 @@ PolygonCollider2D:
     - - {x: -0.49999738, y: 0.28865862}
       - {x: -0.000108130276, y: -0.5796189}
       - {x: 0.49999994, y: 0.2886663}
+  m_UseDelaunayMesh: 0
 --- !u!212 &1153038167
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1798,6 +1802,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayer1Goal: 1
+--- !u!1 &1632789525
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1632789527}
+  - component: {fileID: 1632789526}
+  m_Layer: 0
+  m_Name: UnityMainThreadDispatcher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1632789526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632789525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 711ba4153e357ffdca53c8e0fa91eb59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1632789527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632789525}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.7071557, y: -0.6598911, z: 0.14846535}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1669561609
 GameObject:
   m_ObjectHideFlags: 0
@@ -1959,6 +2007,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
