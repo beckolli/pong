@@ -8,7 +8,7 @@ public class Ball : MonoBehaviour
     public Vector3 startPosition;
     // Start is called before the first frame update    
 
-    private float startSpeed = 0.1f;
+    private float startSpeed = 5;
 
     void Start()
     {
