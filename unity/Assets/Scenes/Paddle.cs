@@ -27,6 +27,7 @@ public class Paddle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log("Update: 4 (Paddle)" + GameObject.Find("GameManager").GetComponent<GameManager>().PlayedTime);
         if (opponent == false)
         {
             movement = Input.GetAxisRaw("Vertical2");

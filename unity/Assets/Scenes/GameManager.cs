@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour
 
     public ServerClient serverClient;
 
+    public long StartTime;
+
+    // Played time in ticks
+    public long PlayedTime = 0;
+
     public void Player1Scored()
     {
         player1Score++;
@@ -63,13 +68,17 @@ public class GameManager : MonoBehaviour
         _clientSocket = serverClient.socket;        
         Paddle opponentPaddle = player2Paddle.GetComponent(typeof(Paddle)) as Paddle;        
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
+        StartTime = DateTime.UtcNow.Ticks;
     }
 
     // Update is called once per frame
     void Update()
     {
+        PlayedTime = DateTime.UtcNow.Ticks - StartTime;
+        //Debug.Log("playedTime: " + PlayedTime);
+        Debug.Log("Update: 2 (GameManager)" + PlayedTime);
     }
-
+ 
     public Task OpponentPaddleUpdateAsync(Paddle paddle)
     {
         while (true)
