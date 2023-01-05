@@ -12,6 +12,8 @@ public class Paddle : MonoBehaviour
     private float movement;
     private float speed = 10;
     float? pastMovement;
+    float? nextMovement;
+    long? nextMovementStartTime;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,17 +31,24 @@ public class Paddle : MonoBehaviour
     {
         if (opponent == false)
         {
-            movement = Input.GetAxisRaw("Vertical2");
+            // fragt die aktuelle Taste ab (Pfeil hoch/runter)
+            movement = Input.GetAxisRaw("Vertical2"); 
             if (movement != pastMovement)
             {
+                nextMovementStartTime = gameManager.PlayedTime + 1000000;
+                nextMovement = movement;
                 gameManager.serverClient.SendPaddleMovment(movement);
                 pastMovement = movement;
-                rb.velocity = new Vector2(rb.velocity.x, movement * speed);
             }
+        }
+        if(nextMovement != null && nextMovementStartTime != null && nextMovementStartTime <= gameManager.PlayedTime) 
+        {
+            rb.velocity = new Vector2(rb.velocity.x, (float)nextMovement * speed);
+            nextMovementStartTime = null;
+            nextMovement = null;
         }
     }
     public void OpponentUpdate(float movement)
     {
-        rb.velocity = new Vector2(rb.velocity.x, movement * speed);
     }
 }
