@@ -30,6 +30,5 @@ public class Goal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Update: 3 (Goal)" + GameObject.Find("GameManager").GetComponent<GameManager>().PlayedTime);
     }
 }

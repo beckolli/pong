@@ -75,8 +75,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         PlayedTime = DateTime.UtcNow.Ticks - StartTime;
-        //Debug.Log("playedTime: " + PlayedTime);
-        Debug.Log("Update: 2 (GameManager)" + PlayedTime);
     }
  
     public Task OpponentPaddleUpdateAsync(Paddle paddle)

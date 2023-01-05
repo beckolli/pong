@@ -27,7 +27,6 @@ public class Ball : MonoBehaviour
     void Update()
     {
         SpeedLimit();
-        Debug.Log("Update: 1 (Ball)" + GameObject.Find("GameManager").GetComponent<GameManager>().PlayedTime);
     }
 
     private void Launch()
