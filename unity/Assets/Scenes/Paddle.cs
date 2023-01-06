@@ -32,8 +32,8 @@ public class Paddle : MonoBehaviour
         if (opponent == false)
         {
             // fragt die aktuelle Taste ab (Pfeil hoch/runter)
-            movement = Input.GetAxisRaw("Vertical2"); 
-            if (movement != _pastMovement)
+            movement = Input.GetAxisRaw("Vertical"); 
+            if (_nextMovement == null && _nextMovementStartTime == null && movement != _pastMovement)
             {
                 _nextMovementStartTime = gameManager.PlayedTime + 1000000;
                 _nextMovement = movement;
