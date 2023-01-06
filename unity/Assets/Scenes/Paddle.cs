@@ -11,9 +11,9 @@ public class Paddle : MonoBehaviour
     public Vector3 startPosition;
     private float movement;
     private float speed = 10;
-    float? pastMovement;
-    float? nextMovement;
-    long? nextMovementStartTime;
+    float? _pastMovement;
+    float? _nextMovement;
+    long? _nextMovementStartTime;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,22 +33,25 @@ public class Paddle : MonoBehaviour
         {
             // fragt die aktuelle Taste ab (Pfeil hoch/runter)
             movement = Input.GetAxisRaw("Vertical2"); 
-            if (movement != pastMovement)
+            if (movement != _pastMovement)
             {
-                nextMovementStartTime = gameManager.PlayedTime + 1000000;
-                nextMovement = movement;
-                gameManager.serverClient.SendPaddleMovment(movement);
-                pastMovement = movement;
+                _nextMovementStartTime = gameManager.PlayedTime + 1000000;
+                _nextMovement = movement;
+                gameManager.serverClient.SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
+                _pastMovement = movement;
             }
         }
-        if(nextMovement != null && nextMovementStartTime != null && nextMovementStartTime <= gameManager.PlayedTime) 
+        if(_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= gameManager.PlayedTime) 
         {
-            rb.velocity = new Vector2(rb.velocity.x, (float)nextMovement * speed);
-            nextMovementStartTime = null;
-            nextMovement = null;
+            rb.velocity = new Vector2(rb.velocity.x, (float)_nextMovement * speed);
+            _nextMovementStartTime = null;
+            _nextMovement = null;
         }
     }
-    public void OpponentUpdate(float movement)
+
+    public void OpponentUpdate(float nextMovement, long nextMovementStartTime)
     {
+        _nextMovement = nextMovement;
+        _nextMovementStartTime = nextMovementStartTime;
     }
 }

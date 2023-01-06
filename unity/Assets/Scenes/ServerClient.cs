@@ -35,9 +35,16 @@ namespace Pong.Unity.Scenes
             }
         }
 
-        public void SendPaddleMovment(float movment)
+        public void SendPaddleMovment(float nextMovment, long nextMovementStartTime)
         {
-            var data = Encoding.ASCII.GetBytes(movment.ToString());
+            var paddleDto = new PaddleDto()
+            {
+                NextMovement = nextMovment,
+                NextMovementStartTime = nextMovementStartTime
+            };
+            var jsonString = JsonUtility.ToJson(paddleDto);
+            var data = Encoding.ASCII.GetBytes(jsonString);
+            
             SocketAsyncEventArgs socketAsyncData = new SocketAsyncEventArgs();
             socketAsyncData.SetBuffer(data, 0, data.Length);
             socket.SendAsync(socketAsyncData);
