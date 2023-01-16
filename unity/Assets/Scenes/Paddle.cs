@@ -4,46 +4,46 @@ using UnityEngine;
 
 public class Paddle : MonoBehaviour
 {
-    public bool opponent;
-    public GameManager gameManager;
+    public bool Opponent;
+    public GameManager GameManager;
 
-    public Rigidbody2D rb;
-    public Vector3 startPosition;
-    private float movement;
-    private float speed = 10;
-    float? _pastMovement;
-    float? _nextMovement;
-    long? _nextMovementStartTime;
+    public Rigidbody2D Rigidbody;
+    public Vector3 StartPosition;
+    private float _movement;
+    private float _speed = 10;
+    private float? _pastMovement;
+    private float? _nextMovement;
+    private long? _nextMovementStartTime;
     // Start is called before the first frame update
     void Start()
     {
-        startPosition = transform.position;
+        StartPosition = transform.position;
     }
 
     public void Reset()
     {
-        rb.velocity = Vector2.zero;
-        transform.position = startPosition;
+        Rigidbody.velocity = Vector2.zero;
+        transform.position = StartPosition;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (opponent == false)
+        if (Opponent == false)
         {
             // fragt die aktuelle Taste ab (Pfeil hoch/runter)
-            movement = Input.GetAxisRaw("Vertical"); 
-            if (_nextMovement == null && _nextMovementStartTime == null && movement != _pastMovement)
+            _movement = Input.GetAxisRaw("Vertical"); 
+            if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
             {
-                _nextMovementStartTime = gameManager.PlayedTime + 1000000;
-                _nextMovement = movement;
-                gameManager.serverClient.SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
-                _pastMovement = movement;
+                _nextMovementStartTime = GameManager.PlayedTime + 1000000;
+                _nextMovement = _movement;
+                GameManager.ServerClient.SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
+                _pastMovement = _movement;
             }
         }
-        if(_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= gameManager.PlayedTime) 
+        if(_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= GameManager.PlayedTime) 
         {
-            rb.velocity = new Vector2(rb.velocity.x, (float)_nextMovement * speed);
+            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, (float)_nextMovement * _speed);
             _nextMovementStartTime = null;
             _nextMovement = null;
         }

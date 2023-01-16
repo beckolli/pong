@@ -14,27 +14,27 @@ public class GameManager : MonoBehaviour
     Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
     [Header("Ball")]
-    public GameObject ball;
+    public GameObject Ball;
 
     [Header("Player1")]
-    public GameObject player1Paddle;
-    public GameObject player1Goal;
+    public GameObject Player1Paddle;
+    public GameObject Player1Goal;
 
     [Header("Player2")]
-    public GameObject player2Paddle;
-    public GameObject player2Goal;
+    public GameObject Player2Paddle;
+    public GameObject Player2Goal;
 
     [Header("UnityMainThreadDispatcher")]
-    public GameObject unityMainThreadDispatcher;
+    public GameObject UnityMainThreadDispatcher;
 
     [Header("Score UI")]
-    public GameObject player1Text;
-    public GameObject player2Text;
+    public GameObject Player1Text;
+    public GameObject Player2Text;
 
-    public int player1Score;
-    public int player2Score;
+    public int Player1Score;
+    public int Player2Score;
 
-    public ServerClient serverClient;
+    public ServerClient ServerClient;
 
     public long StartTime;
 
@@ -43,32 +43,32 @@ public class GameManager : MonoBehaviour
 
     public void Player1Scored()
     {
-        player1Score++;
-        player1Text.GetComponent<TextMeshProUGUI>().text = player1Score.ToString();
+        Player1Score++;
+        Player1Text.GetComponent<TextMeshProUGUI>().text = Player1Score.ToString();
         ResetPosition();
     }
 
     public void Player2Scored()
     {
-        player2Score++;
-        player2Text.GetComponent<TextMeshProUGUI>().text = player2Score.ToString();
+        Player2Score++;
+        Player2Text.GetComponent<TextMeshProUGUI>().text = Player2Score.ToString();
         ResetPosition();
     }
 
     private void ResetPosition()
     {
-        ball.GetComponent<Ball>().Reset();
-        player1Paddle.GetComponent<Paddle>().Reset();
-        player2Paddle.GetComponent<Paddle>().Reset();
+        Ball.GetComponent<Ball>().Reset();
+        Player1Paddle.GetComponent<Paddle>().Reset();
+        Player2Paddle.GetComponent<Paddle>().Reset();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        serverClient = new ServerClient();
-        serverClient.Connect();
-        _clientSocket = serverClient.socket;
-        Paddle opponentPaddle = player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
+        ServerClient = new ServerClient();
+        ServerClient.Connect();
+        _clientSocket = ServerClient.Socket;
+        Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
         StartTime = DateTime.UtcNow.Ticks;
     }
@@ -84,12 +84,12 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             var bytes = new byte[1024];
-            var bytesCount = serverClient.socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
+            var bytesCount = ServerClient.Socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             try
             {
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
                 var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
-                UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
             }
             catch (Exception e)
             {

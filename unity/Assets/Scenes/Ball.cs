@@ -4,22 +4,22 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    public Rigidbody2D rb;
-    public Vector3 startPosition;
+    public Rigidbody2D Rigidbody;
+    public Vector3 StartPosition;
     // Start is called before the first frame update    
 
-    private float startSpeed = 5;
+    private float _startSpeed = 5;
 
     void Start()
     {
-        startPosition = transform.position;
+        StartPosition = transform.position;
         Launch();
     }
 
     public void Reset()
     {
-        rb.velocity = Vector2.zero;
-        transform.position = startPosition;
+        Rigidbody.velocity = Vector2.zero;
+        transform.position = StartPosition;
         Launch();
     }
 
@@ -33,43 +33,43 @@ public class Ball : MonoBehaviour
     {
         float x = Random.Range(0, 2) == 0 ? -1 : 1;
         float y = Random.Range(0, 2) == 0 ? -1 : 1;
-        rb.velocity = new Vector2(startSpeed * x, startSpeed * y);
+        Rigidbody.velocity = new Vector2(_startSpeed * x, _startSpeed * y);
     }
 
     private void SpeedLimit()
     {
-        if (rb.velocity.x < 0)
+        if (Rigidbody.velocity.x < 0)
         {
-            if (rb.velocity.x > -1.5)
+            if (Rigidbody.velocity.x > -1.5)
             {
-                rb.velocity = new Vector2(-1.5f, rb.velocity.y);
+                Rigidbody.velocity = new Vector2(-1.5f, Rigidbody.velocity.y);
             }
 
-            if (rb.velocity.x < -20)
+            if (Rigidbody.velocity.x < -20)
             {
-                rb.velocity = new Vector2(-20f, rb.velocity.y);
+                Rigidbody.velocity = new Vector2(-20f, Rigidbody.velocity.y);
             }
         }
         else
         {
-            if (rb.velocity.x < 1.5)
+            if (Rigidbody.velocity.x < 1.5)
             {
-                rb.velocity = new Vector2(1.5f, rb.velocity.y);
+                Rigidbody.velocity = new Vector2(1.5f, Rigidbody.velocity.y);
             }
 
-            if (rb.velocity.x > 20)
+            if (Rigidbody.velocity.x > 20)
             {
-                rb.velocity = new Vector2(20f, rb.velocity.y);
+                Rigidbody.velocity = new Vector2(20f, Rigidbody.velocity.y);
             }
         }
-        if (rb.velocity.y < -20)
+        if (Rigidbody.velocity.y < -20)
         {
-            rb.velocity = new Vector2(rb.velocity.x, -20f);
+            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, -20f);
         }
 
-        if (rb.velocity.y > 20)
+        if (Rigidbody.velocity.y > 20)
         {
-            rb.velocity = new Vector2(rb.velocity.x, -20f);
+            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, -20f);
         }
     }
 }
