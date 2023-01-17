@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Ball")]
     public GameObject Ball;
+    public GameObject SpeedLimitText;
 
     [Header("Player1")]
     public GameObject Player1Paddle;
@@ -36,7 +37,9 @@ public class GameManager : MonoBehaviour
 
     public ServerClient ServerClient;
 
+    [Header("Time")]
     public long StartTime;
+    public long SpeedLimitTime = 0;
 
     // Played time in ticks
     public long PlayedTime = 0;
@@ -60,6 +63,7 @@ public class GameManager : MonoBehaviour
         Ball.GetComponent<Ball>().Reset();
         Player1Paddle.GetComponent<Paddle>().Reset();
         Player2Paddle.GetComponent<Paddle>().Reset();
+        HideSpeedLimit();
     }
 
     // Start is called before the first frame update
@@ -71,6 +75,7 @@ public class GameManager : MonoBehaviour
         Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
         StartTime = DateTime.UtcNow.Ticks;
+        SpeedLimitText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -98,5 +103,14 @@ public class GameManager : MonoBehaviour
         }
 
         return Task.CompletedTask;
+    }
+
+    public void ShowSpeedLimit()
+    {
+        SpeedLimitText.gameObject.SetActive(true);
+    }
+    public void HideSpeedLimit()
+    {
+        SpeedLimitText.gameObject.SetActive(false);
     }
 }

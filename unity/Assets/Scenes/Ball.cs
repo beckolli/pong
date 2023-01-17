@@ -6,9 +6,11 @@ public class Ball : MonoBehaviour
 {
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
-    // Start is called before the first frame update    
+    // Start is called before the first frame update
 
     private float _startSpeed = 5;
+
+    public GameManager GameManager;
 
     void Start()
     {
@@ -26,7 +28,7 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SpeedLimit();
+         SpeedLimit();
     }
 
     private void Launch()
@@ -38,16 +40,26 @@ public class Ball : MonoBehaviour
 
     private void SpeedLimit()
     {
+        
+        if(GameManager.SpeedLimitTime <= GameManager.PlayedTime)
+            {
+                GameManager.HideSpeedLimit();
+            }
+
         if (Rigidbody.velocity.x < 0)
         {
             if (Rigidbody.velocity.x > -1.5)
             {
                 Rigidbody.velocity = new Vector2(-1.5f, Rigidbody.velocity.y);
+                GameManager.ShowSpeedLimit();
+                GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
             }
 
             if (Rigidbody.velocity.x < -20)
             {
                 Rigidbody.velocity = new Vector2(-20f, Rigidbody.velocity.y);
+                GameManager.ShowSpeedLimit();
+                GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
             }
         }
         else
@@ -55,21 +67,29 @@ public class Ball : MonoBehaviour
             if (Rigidbody.velocity.x < 1.5)
             {
                 Rigidbody.velocity = new Vector2(1.5f, Rigidbody.velocity.y);
+                GameManager.ShowSpeedLimit();
+                GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
             }
 
             if (Rigidbody.velocity.x > 20)
             {
                 Rigidbody.velocity = new Vector2(20f, Rigidbody.velocity.y);
+                GameManager.ShowSpeedLimit();
+                GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
             }
         }
         if (Rigidbody.velocity.y < -20)
         {
             Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, -20f);
+            GameManager.ShowSpeedLimit();
+            GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
         }
 
         if (Rigidbody.velocity.y > 20)
         {
             Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, -20f);
+            GameManager.ShowSpeedLimit();
+            GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
         }
     }
 }
