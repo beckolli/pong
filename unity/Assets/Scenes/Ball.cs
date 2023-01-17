@@ -87,7 +87,7 @@ public class Ball : MonoBehaviour
 
         if (Rigidbody.velocity.y > 20)
         {
-            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, -20f);
+            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, 20f);
             GameManager.ShowSpeedLimit();
             GameManager.SpeedLimitTime = GameManager.PlayedTime + 10000000;
         }
