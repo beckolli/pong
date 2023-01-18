@@ -58,6 +58,11 @@ public class GameManager : MonoBehaviour
     public GameObject Player2WonText;
     public GameObject TieText;
 
+    [Header ("Power-Ups")]
+    public GameObject MiddleWallPU;
+    public long WallPUTime;
+    public bool WallPUUsed = true;
+
     public void Player1Scored()
     {
         Player1Score++;
@@ -93,55 +98,46 @@ public class GameManager : MonoBehaviour
         Player1WonText.gameObject.SetActive(false);
         Player2WonText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
+        MiddleWallPU.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Win Conditions
         if(Player2Score == 20)
         {
-            Player2WonText.gameObject.SetActive(true);
-            IsFinished = true;
-            BallX.Rigidbody.velocity = new Vector2(0f, 0f);
-            TimerText.gameObject.SetActive(false);
+            Player2Won();
         }
         else
         if(Player1Score == 20)
         {
-            Player1WonText.gameObject.SetActive(true);
-            IsFinished = true;
-            BallX.Rigidbody.velocity = new Vector2(0f, 0f);
-            TimerText.gameObject.SetActive(false);
+            Player1Won();
         }
         if(IsFinished == false)
         {
             PlayedTime = DateTime.UtcNow.Ticks - StartTime;
-            TimeInTimer = 180 - (PlayedTime / 10000000);
-            Seconds = TimeInTimer % 60;
-            Minutes = TimeInTimer / 60;
-            TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + Minutes.ToString() + ":" + Seconds.ToString();
+            Timer();
             if (TimeInTimer <= 0)
             {
                 IsFinished = true;
             }
             if (IsFinished)
             {
-                BallX.Rigidbody.velocity = new Vector2(0f, 0f);
-                HideSpeedLimit();
-                TimerText.gameObject.SetActive(false);
-                if(Player1Score > Player2Score)
-                {
-                    Player1WonText.gameObject.SetActive(true);
-                }
-                else
-                if (Player2Score > Player1Score)
-                {
-                    Player2WonText.gameObject.SetActive(true);
-                }
-                else 
-                {
-                    TieText.gameObject.SetActive(true);
-                }
+                TimerEnd();
+            }
+            // Power-Ups
+            if(Player1Score == 3)
+            {
+                WallPUUsed = false;
+            }
+            if(Input.GetKeyDown(KeyCode.E) && WallPUUsed == false)
+            {
+                WallPUStart();
+            }
+            if(WallPUTime < PlayedTime)
+            {
+                WallPUEnd();
             }
         }
     }
@@ -175,6 +171,61 @@ public class GameManager : MonoBehaviour
     {
         SpeedLimitText.gameObject.SetActive(false);
     }
+    void Timer()
+    {
+        TimeInTimer = 180 - (PlayedTime / 10000000);
+        Seconds = TimeInTimer % 60;
+        Minutes = TimeInTimer / 60;
+        TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + Minutes.ToString() + ":" + Seconds.ToString();
+    }
+
+    void Player2Won()
+    {
+        Player2WonText.gameObject.SetActive(true);
+        IsFinished = true;
+        BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+        TimerText.gameObject.SetActive(false);
+    }
+
+    void Player1Won()
+    {
+        Player1WonText.gameObject.SetActive(true);
+        IsFinished = true;
+        BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+        TimerText.gameObject.SetActive(false);
+    }
+
+    void TimerEnd()
+    {
+                HideSpeedLimit();
+                if(Player1Score > Player2Score)
+                {
+                    Player1Won();
+                }
+                else
+                if (Player2Score > Player1Score)
+                {
+                    Player2Won();
+                }
+                else 
+                {
+                    TieText.gameObject.SetActive(true);
+                }
+    }
+
+    //PU stands for Power Up
+    void WallPUStart()
+    {
+        // Aktueller Timer <= ReadTimer - 5
+        MiddleWallPU.gameObject.SetActive(true);
+        WallPUTime = PlayedTime + 50000000;
+    }
+
+    void WallPUEnd()
+    {
+        MiddleWallPU.gameObject.SetActive(false);
+        WallPUUsed = true;
+    }
 }
 
 
@@ -182,4 +233,5 @@ public class GameManager : MonoBehaviour
 // ich könnte die Animation weglassen
 // ich könnte die Animation vom Tor aus aktivieren 
 // wenn ich sie da lasse muss ich alles delayen (vor dem reset)
-// 
+//Idee:
+//Update Funktion verschönern, indem man neue Funktion immer abfragt (fertig)
