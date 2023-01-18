@@ -41,8 +41,22 @@ public class GameManager : MonoBehaviour
     public long StartTime;
     public long SpeedLimitTime = 0;
 
-    // Played time in ticks
+    // Played time in ticks (10.000.000 in 1 second)
     public long PlayedTime = 0;
+
+    [Header("Timer")]
+    public long TimeInTimer;
+    public long Minutes;
+    public long Seconds;
+    public bool IsFinished = false;
+    public GameObject TimerText;
+
+    public Ball BallX;
+
+    [Header("Win Texts")]
+    public GameObject Player1WonText;
+    public GameObject Player2WonText;
+    public GameObject TieText;
 
     public void Player1Scored()
     {
@@ -76,12 +90,60 @@ public class GameManager : MonoBehaviour
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
         StartTime = DateTime.UtcNow.Ticks;
         SpeedLimitText.gameObject.SetActive(false);
+        Player1WonText.gameObject.SetActive(false);
+        Player2WonText.gameObject.SetActive(false);
+        TieText.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        PlayedTime = DateTime.UtcNow.Ticks - StartTime;
+        if(Player2Score == 20)
+        {
+            Player2WonText.gameObject.SetActive(true);
+            IsFinished = true;
+            BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+            TimerText.gameObject.SetActive(false);
+        }
+        else
+        if(Player1Score == 20)
+        {
+            Player1WonText.gameObject.SetActive(true);
+            IsFinished = true;
+            BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+            TimerText.gameObject.SetActive(false);
+        }
+        if(IsFinished == false)
+        {
+            PlayedTime = DateTime.UtcNow.Ticks - StartTime;
+            TimeInTimer = 180 - (PlayedTime / 10000000);
+            Seconds = TimeInTimer % 60;
+            Minutes = TimeInTimer / 60;
+            TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + Minutes.ToString() + ":" + Seconds.ToString();
+            if (TimeInTimer <= 0)
+            {
+                IsFinished = true;
+            }
+            if (IsFinished)
+            {
+                BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+                HideSpeedLimit();
+                TimerText.gameObject.SetActive(false);
+                if(Player1Score > Player2Score)
+                {
+                    Player1WonText.gameObject.SetActive(true);
+                }
+                else
+                if (Player2Score > Player1Score)
+                {
+                    Player2WonText.gameObject.SetActive(true);
+                }
+                else 
+                {
+                    TieText.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 
     public Task OpponentPaddleUpdateAsync(Paddle paddle)
@@ -114,3 +176,10 @@ public class GameManager : MonoBehaviour
         SpeedLimitText.gameObject.SetActive(false);
     }
 }
+
+
+//Möglichkeiten für die Animation:
+// ich könnte die Animation weglassen
+// ich könnte die Animation vom Tor aus aktivieren 
+// wenn ich sie da lasse muss ich alles delayen (vor dem reset)
+// 
