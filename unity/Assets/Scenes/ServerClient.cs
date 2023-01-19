@@ -1,25 +1,20 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Pong.Unity.Scenes
 {
     public class ServerClient
     {
-        byte[] _bytes = null;
-
-        public Socket Socket;
+        public Socket? Socket;
 
         public void Connect()
         {
-            _bytes = new byte[1024];
             try
             {
                 IPHostEntry host = Dns.GetHostEntry("localhost");
                 IPAddress ipAddress = host.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
+                var remoteEP = new IPEndPoint(ipAddress, 11000);
 
                 Socket = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
@@ -35,7 +30,9 @@ namespace Pong.Unity.Scenes
 
         public void Send(string data)
         {
-            SocketAsyncEventArgs socketAsyncData = new SocketAsyncEventArgs();
+            if (Socket == null) return;
+
+            SocketAsyncEventArgs socketAsyncData = new();
             socketAsyncData.SetBuffer(Encoding.ASCII.GetBytes(data), 0, data.Length);
             Socket.SendAsync(socketAsyncData);
         }

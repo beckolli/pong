@@ -33,8 +33,9 @@ namespace Pong.Server.Test
             Assert.Equal("player2 test", player1DataReceiver.Data);
         }
 
-        static Task RecieveAsync(Socket socket, DataReceiver dataReceiver)
+        static Task RecieveAsync(Socket? socket, DataReceiver dataReceiver)
         {
+            if(socket == null) return Task.CompletedTask;
             var bytes = new byte[1024];
             var bytesCount = socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             dataReceiver.Data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
