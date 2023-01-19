@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AssemblyName>Pong.Server.Test</AssemblyName>
+		<RootNamespace>Pong.Server.Test</RootNamespace>		
+	</PropertyGroup>
+
+	<ItemGroup>		
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />		
+		<PackageReference Include="xunit" Version="2.4.2"/>
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>		
+	</ItemGroup>
+
+	<ItemGroup>		
+		<ProjectReference Include="..\..\src\Server\Server.csproj" />
+		<ProjectReference Include="..\..\unity\Assembly-CSharp.csproj" />
+	</ItemGroup>
+	<ItemGroup>		
+		<Compile Include="..\..\unity\Assets\Scenes\ServerClient.cs" />
+		<Compile Include="..\..\unity\Assets\Scenes\PaddleDto.cs" />
+	</ItemGroup>
+</Project>

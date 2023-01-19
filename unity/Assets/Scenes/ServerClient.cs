@@ -1,10 +1,6 @@
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using TMPro;
-using UnityEngine;
 
 namespace Pong.Unity.Scenes
 {
@@ -35,18 +31,12 @@ namespace Pong.Unity.Scenes
             }
         }
 
-        public void SendPaddleMovment(float nextMovment, long nextMovementStartTime)
+        public void Send(string data)
         {
-            var paddleDto = new PaddleDto()
-            {
-                NextMovement = nextMovment,
-                NextMovementStartTime = nextMovementStartTime
-            };
-            var jsonString = JsonUtility.ToJson(paddleDto);
-            var data = Encoding.ASCII.GetBytes(jsonString);
+            var bytes = Encoding.ASCII.GetBytes(data);
             
             SocketAsyncEventArgs socketAsyncData = new SocketAsyncEventArgs();
-            socketAsyncData.SetBuffer(data, 0, data.Length);
+            socketAsyncData.SetBuffer(bytes, 0, bytes.Length);
             Socket.SendAsync(socketAsyncData);
         }
 
