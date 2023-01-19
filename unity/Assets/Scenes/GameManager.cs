@@ -46,13 +46,11 @@ public class GameManager : MonoBehaviour
     public long PlayedTime = 0;
 
     [Header("Timer")]
-    public long TimeInTimer;
-    public long Minutes;
-    public long Seconds;
+    long _timeInTimer;
+    long _minutes;
+    long _seconds;
     public bool IsFinished = false;
     public GameObject TimerText;
-
-    public Ball BallX;
 
     [Header("Win Texts")]
     public GameObject Player1WonText;
@@ -61,10 +59,10 @@ public class GameManager : MonoBehaviour
 
     [Header ("Power-Ups")]
     public GameObject MiddleWallPU;
-    public long? WallPUTime = null;
-    public bool WallPUUsed;
+    long? _wallPUTime = null;
+    bool _wallPUUsed;
     public GameObject E;
-    public bool FirePUUsed;
+    bool _firePUUsed;
     public GameObject F;
 
     public void Player1Scored()
@@ -103,8 +101,8 @@ public class GameManager : MonoBehaviour
         Player2WonText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
         MiddleWallPU.gameObject.SetActive(false);
-        WallPUUsed = false;
-        FirePUUsed = false;
+        _wallPUUsed = false;
+        _firePUUsed = false;
     }
 
     // Update is called once per frame
@@ -124,7 +122,7 @@ public class GameManager : MonoBehaviour
         {
             PlayedTime = DateTime.UtcNow.Ticks - StartTime;
             Timer();
-            if (TimeInTimer <= 0)
+            if (_timeInTimer <= 0)
             {
                 IsFinished = true;
             }
@@ -133,16 +131,16 @@ public class GameManager : MonoBehaviour
                 TimerEnd();
             }
             // Power-Ups
-            if(Input.GetKeyDown(KeyCode.E) && WallPUUsed == false)
+            if(Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
             {
                 WallPUStart();
             }
-            if(WallPUTime < PlayedTime)
+            if(_wallPUTime < PlayedTime)
             {
                 WallPUEnd();
             }
 
-            if(Input.GetKeyDown(KeyCode.F) && FirePUUsed == false)
+            if(Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
             {
                 FirePU();
             }
@@ -180,17 +178,17 @@ public class GameManager : MonoBehaviour
     }
     void Timer()
     {
-        TimeInTimer = 180 - (PlayedTime / 10000000);
-        Seconds = TimeInTimer % 60;
-        Minutes = TimeInTimer / 60;
-        TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + Minutes.ToString() + ":" + Seconds.ToString();
+        _timeInTimer = 180 - (PlayedTime / 10000000);
+        _seconds = _timeInTimer % 60;
+        _minutes = _timeInTimer / 60;
+        TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + _minutes.ToString() + ":" + _seconds.ToString();
     }
 
     void Player2Won()
     {
         Player2WonText.gameObject.SetActive(true);
         IsFinished = true;
-        BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
         TimerText.gameObject.SetActive(false);
     }
 
@@ -198,7 +196,7 @@ public class GameManager : MonoBehaviour
     {
         Player1WonText.gameObject.SetActive(true);
         IsFinished = true;
-        BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
         TimerText.gameObject.SetActive(false);
     }
 
@@ -217,7 +215,7 @@ public class GameManager : MonoBehaviour
             else 
             {
                 IsFinished = true;
-                BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+                Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
                 TimerText.gameObject.SetActive(false);
                 TieText.gameObject.SetActive(true);
             }
@@ -227,20 +225,20 @@ public class GameManager : MonoBehaviour
     void WallPUStart()
     {
         MiddleWallPU.gameObject.SetActive(true);
-        WallPUTime = PlayedTime + 50000000;
+        _wallPUTime = PlayedTime + 50000000;
     }
 
     void WallPUEnd()
     {
         MiddleWallPU.gameObject.SetActive(false);
-        WallPUUsed = true;
+        _wallPUUsed = true;
         E.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
     }
 
     void FirePU()
     {
-        BallX.Rigidbody.velocity = new Vector2(10f, 0f);
-        FirePUUsed = true;
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(10f, 0f);
+        _firePUUsed = true;
         F.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
     }
 }
