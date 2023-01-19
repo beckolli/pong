@@ -1,6 +1,8 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Pong.Unity.Scenes
 {
@@ -33,12 +35,9 @@ namespace Pong.Unity.Scenes
 
         public void Send(string data)
         {
-            var bytes = Encoding.ASCII.GetBytes(data);
-            
             SocketAsyncEventArgs socketAsyncData = new SocketAsyncEventArgs();
-            socketAsyncData.SetBuffer(bytes, 0, bytes.Length);
+            socketAsyncData.SetBuffer(Encoding.ASCII.GetBytes(data), 0, data.Length);
             Socket.SendAsync(socketAsyncData);
         }
-
     }
 }

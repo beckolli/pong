@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class Paddle : MonoBehaviour
@@ -37,7 +38,7 @@ public class Paddle : MonoBehaviour
             {
                 _nextMovementStartTime = GameManager.PlayedTime + 1000000;
                 _nextMovement = _movement;
-                GameManager.ServerClient.SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
+                SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
                 _pastMovement = _movement;
             }
         }
@@ -54,4 +55,15 @@ public class Paddle : MonoBehaviour
         _nextMovement = nextMovement;
         _nextMovementStartTime = nextMovementStartTime;
     }
+    public void SendPaddleMovment(float nextMovment, long nextMovementStartTime)
+        {
+            var paddleDto = new PaddleDto()
+            {
+                NextMovement = nextMovment,
+                NextMovementStartTime = nextMovementStartTime
+            };
+            var jsonString = JsonUtility.ToJson(paddleDto);
+
+            GameManager.ServerClient.Send(jsonString);
+        }
 }

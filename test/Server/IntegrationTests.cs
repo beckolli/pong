@@ -26,11 +26,11 @@ namespace Pong.Server.Test
 
             player1ServerClient.Send("player1 test");
             Task.Delay(100).Wait();
-            Assert.Equal("player1 test", player1DataReceiver.Data);
+            Assert.Equal("player1 test", player2DataReceiver.Data);
 
             player2ServerClient.Send("player2 test");
             Task.Delay(100).Wait();
-            Assert.Equal("player2 test", player2DataReceiver.Data);
+            Assert.Equal("player2 test", player1DataReceiver.Data);
         }
 
         static Task RecieveAsync(Socket socket, DataReceiver dataReceiver)
