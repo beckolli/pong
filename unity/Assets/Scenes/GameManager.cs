@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Pong.Unity.Scenes;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -60,8 +61,11 @@ public class GameManager : MonoBehaviour
 
     [Header ("Power-Ups")]
     public GameObject MiddleWallPU;
-    public long WallPUTime;
-    public bool WallPUUsed = true;
+    public long? WallPUTime = null;
+    public bool WallPUUsed;
+    public GameObject E;
+    public bool FirePUUsed;
+    public GameObject F;
 
     public void Player1Scored()
     {
@@ -99,6 +103,8 @@ public class GameManager : MonoBehaviour
         Player2WonText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
         MiddleWallPU.gameObject.SetActive(false);
+        WallPUUsed = false;
+        FirePUUsed = false;
     }
 
     // Update is called once per frame
@@ -127,10 +133,6 @@ public class GameManager : MonoBehaviour
                 TimerEnd();
             }
             // Power-Ups
-            if(Player1Score == 3)
-            {
-                WallPUUsed = false;
-            }
             if(Input.GetKeyDown(KeyCode.E) && WallPUUsed == false)
             {
                 WallPUStart();
@@ -138,6 +140,11 @@ public class GameManager : MonoBehaviour
             if(WallPUTime < PlayedTime)
             {
                 WallPUEnd();
+            }
+
+            if(Input.GetKeyDown(KeyCode.F) && FirePUUsed == false)
+            {
+                FirePU();
             }
         }
     }
@@ -197,26 +204,28 @@ public class GameManager : MonoBehaviour
 
     void TimerEnd()
     {
-                HideSpeedLimit();
-                if(Player1Score > Player2Score)
-                {
-                    Player1Won();
-                }
-                else
-                if (Player2Score > Player1Score)
-                {
-                    Player2Won();
-                }
-                else 
-                {
-                    TieText.gameObject.SetActive(true);
-                }
+        HideSpeedLimit();
+        if(Player1Score > Player2Score)
+            {
+                Player1Won();
+            }
+            else
+            if (Player2Score > Player1Score)
+            {
+                Player2Won();
+            }
+            else 
+            {
+                IsFinished = true;
+                BallX.Rigidbody.velocity = new Vector2(0f, 0f);
+                TimerText.gameObject.SetActive(false);
+                TieText.gameObject.SetActive(true);
+            }
     }
 
     //PU stands for Power Up
     void WallPUStart()
     {
-        // Aktueller Timer <= ReadTimer - 5
         MiddleWallPU.gameObject.SetActive(true);
         WallPUTime = PlayedTime + 50000000;
     }
@@ -225,13 +234,20 @@ public class GameManager : MonoBehaviour
     {
         MiddleWallPU.gameObject.SetActive(false);
         WallPUUsed = true;
+        E.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
+    }
+
+    void FirePU()
+    {
+        BallX.Rigidbody.velocity = new Vector2(10f, 0f);
+        FirePUUsed = true;
+        F.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
     }
 }
-
 
 //Möglichkeiten für die Animation:
 // ich könnte die Animation weglassen
 // ich könnte die Animation vom Tor aus aktivieren 
 // wenn ich sie da lasse muss ich alles delayen (vor dem reset)
 //Idee:
-//Update Funktion verschönern, indem man neue Funktion immer abfragt (fertig)
+//Update Funktion verschönern, indem man neue Methoden immer abfragt 
