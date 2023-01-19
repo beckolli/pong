@@ -42,7 +42,6 @@
   <ItemGroup>
      <Compile Include="Assets\Scenes\PowerUp.cs" />
      <Compile Include="Assets\Scenes\Ball.cs" />
-     <Compile Include="Assets\JohnFarmer\Keyboard Keys &amp; Mouse Sprites\Demo\Scripts\Demo.cs" />
      <Compile Include="Assets\Scenes\GameManager.cs" />
      <Compile Include="Assets\Scenes\Paddle.cs" />
      <Compile Include="Assets\Scenes\PaddleDto.cs" />
