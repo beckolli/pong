@@ -19,12 +19,12 @@ public class GameManager : MonoBehaviour
     public GameObject SpeedLimitText;
 
     [Header("Player1")]
-    public GameObject Player1Paddle;
     public GameObject Player1Goal;
+    public GameObject Player1Paddle;
 
     [Header("Player2")]
-    public GameObject Player2Paddle;
     public GameObject Player2Goal;
+    public GameObject Player2Paddle;
 
     [Header("UnityMainThreadDispatcher")]
     public GameObject UnityMainThreadDispatcher;
@@ -39,18 +39,17 @@ public class GameManager : MonoBehaviour
     public ServerClient ServerClient;
 
     [Header("Time")]
-    public long StartTime;
-    public long SpeedLimitTime = 0;
-
     // Played time in ticks (10.000.000 in 1 second)
     public long PlayedTime = 0;
+    public long SpeedLimitTime = 0;
+    public long StartTime;
 
     [Header("Timer")]
-    long _timeInTimer;
-    long _minutes;
-    long _seconds;
     public bool IsFinished = false;
     public GameObject TimerText;
+    long _minutes;
+    long _seconds;
+    long _timeInTimer;
 
     [Header("Win Texts")]
     public GameObject Player1WonText;
@@ -58,12 +57,12 @@ public class GameManager : MonoBehaviour
     public GameObject TieText;
 
     [Header ("Power-Ups")]
-    public GameObject MiddleWallPU;
-    long? _wallPUTime = null;
-    bool _wallPUUsed;
     public GameObject E;
-    bool _firePUUsed;
     public GameObject F;
+    public GameObject MiddleWallPU;
+    bool _firePUUsed;
+    bool _wallPUUsed;
+    long? _wallPUTime = null;
 
     public void Player1Scored()
     {
@@ -96,13 +95,13 @@ public class GameManager : MonoBehaviour
         Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
         StartTime = DateTime.UtcNow.Ticks;
-        SpeedLimitText.gameObject.SetActive(false);
+        MiddleWallPU.gameObject.SetActive(false);
         Player1WonText.gameObject.SetActive(false);
         Player2WonText.gameObject.SetActive(false);
+        SpeedLimitText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
-        MiddleWallPU.gameObject.SetActive(false);
-        _wallPUUsed = false;
         _firePUUsed = false;
+        _wallPUUsed = false;
     }
 
     // Update is called once per frame
@@ -131,18 +130,21 @@ public class GameManager : MonoBehaviour
                 TimerEnd();
             }
             // Power-Ups
-            if(Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
-            {
-                WallPUStart();
-            }
-            if(_wallPUTime < PlayedTime)
-            {
-                WallPUEnd();
-            }
+            if(Player1Paddle.GetComponent<Paddle>().Opponent == false)
+                {
+                if(Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
+                {
+                    WallPUStart();
+                }
+                if(_wallPUTime < PlayedTime)
+                {
+                    WallPUEnd();
+                }
 
-            if(Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
-            {
-                FirePU();
+                if(Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
+                {
+                    FirePU();
+                }
             }
         }
     }
@@ -182,6 +184,10 @@ public class GameManager : MonoBehaviour
         _seconds = _timeInTimer % 60;
         _minutes = _timeInTimer / 60;
         TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + _minutes.ToString() + ":" + _seconds.ToString();
+        if ((_seconds = _timeInTimer % 60) < 10)
+        {
+            TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + _minutes.ToString() + ":0" + _seconds.ToString();
+        }
     }
 
     void Player2Won()
@@ -189,7 +195,6 @@ public class GameManager : MonoBehaviour
         Player2WonText.gameObject.SetActive(true);
         IsFinished = true;
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-        TimerText.gameObject.SetActive(false);
     }
 
     void Player1Won()
@@ -197,7 +202,6 @@ public class GameManager : MonoBehaviour
         Player1WonText.gameObject.SetActive(true);
         IsFinished = true;
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-        TimerText.gameObject.SetActive(false);
     }
 
     void TimerEnd()
@@ -216,7 +220,6 @@ public class GameManager : MonoBehaviour
             {
                 IsFinished = true;
                 Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-                TimerText.gameObject.SetActive(false);
                 TieText.gameObject.SetActive(true);
             }
     }

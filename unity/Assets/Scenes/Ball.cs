@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
+    public GameManager GameManager;
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
-    // Start is called before the first frame update
-
     private float _startSpeed = 5;
 
-    public GameManager GameManager;
-
+    // Start is called before the first frame update
     void Start()
     {
         StartPosition = transform.position;
