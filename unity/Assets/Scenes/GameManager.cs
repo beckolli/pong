@@ -245,10 +245,3 @@ public class GameManager : MonoBehaviour
         F.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
     }
 }
-
-//Möglichkeiten für die Animation:
-// ich könnte die Animation weglassen
-// ich könnte die Animation vom Tor aus aktivieren 
-// wenn ich sie da lasse muss ich alles delayen (vor dem reset)
-//Idee:
-//Update Funktion verschönern, indem man neue Methoden immer abfragt 

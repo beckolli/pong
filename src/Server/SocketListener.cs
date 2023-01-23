@@ -1,11 +1,17 @@
 using System.Net;
 using System.Net.Sockets;
+using Pong.Server.Models;
+using System.Text;
 
 namespace Pong.Server
 {
     public class SocketListener
     {
+        Game? _game;
         Socket? _listener = null;
+
+        public string StartMessage = new("start");
+
         public void StartServer()
         {
             // Get Host IP Address that is used to establish a connection
@@ -13,7 +19,7 @@ namespace Pong.Server
             // If a host has multiple addresses, you will get a list of addresses
             IPHostEntry host = Dns.GetHostEntry("localhost");
             IPAddress ipAddress = host.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+            IPEndPoint localEndPoint = new(ipAddress, 11000);
 
             try
             {
@@ -28,24 +34,54 @@ namespace Pong.Server
                 Listen();
 
             }
-            catch(Exception e)
+            catch (Exception)
             {
-                if (_listener != null)
-                {
-                    _listener.Close();
-                }       
+                _listener?.Close();
             }
         }
 
         void Listen()
         {
             Console.WriteLine("Waiting for a connection...");
-            var handler = _listener.Accept();
-            var socketHolder = new SocketHolder(handler);
+            if (_listener == null)
+            {
+                return;
+            }
+            var socket = _listener.Accept();
+
             Console.WriteLine("connecting...");
+            Player player = new(socket);
+            _game = ConnectPlayerToGame(player, _game);
+            var socketHolder = new SocketHolder(_game, player);
             new Task(() => socketHolder.ReadDataAndSendToOpponent()).Start();
+            SendGameStartMessage();
+
             Listen();
         }
-        
+
+        void SendGameStartMessage()
+        {
+            if (_game != null && _game.Player2 != null)
+            {
+                byte[] startMessageBytes = Encoding.ASCII.GetBytes(StartMessage);
+                _game.Player1.Socket.Send(startMessageBytes);
+                _game.Player2.Socket.Send(startMessageBytes);
+            }
+        }
+
+        public static Game ConnectPlayerToGame(Player player, Game? game)
+        {
+            var currentGame = game ?? new Game(player);
+            if (game == null)
+            {
+                player.Name = "Player 1";
+            }
+            else
+            {
+                game.Player2 = player;
+                player.Name = "Player 2";
+            }
+            return currentGame;
+        }
     }
 }

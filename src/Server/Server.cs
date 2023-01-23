@@ -5,7 +5,7 @@ namespace Pong.Server
     // messages on the specified port and protocol.
     public class PongServer
     {
-        public static int Main(String[] args)
+        public static int Main()
         {
             var socketListener  = new SocketListener();
             socketListener.StartServer();

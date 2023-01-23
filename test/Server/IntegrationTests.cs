@@ -24,13 +24,19 @@ namespace Pong.Server.Test
             player2ServerClient.Connect();
             new Task(() => RecieveAsync(player2ServerClient.Socket, player2DataReceiver)).Start();
 
-            player1ServerClient.Send("player1 test");
-            Task.Delay(100).Wait();
-            Assert.Equal("player1 test", player2DataReceiver.Data);
+            // both players need to connect (get a message from the server)
+            Task.Delay(300).Wait();
+            Assert.Equal("start", player1DataReceiver.Data);
+            Assert.Equal("start", player2DataReceiver.Data);
 
-            player2ServerClient.Send("player2 test");
+            player1ServerClient.Send("player1 to player2 test");
             Task.Delay(100).Wait();
-            Assert.Equal("player2 test", player1DataReceiver.Data);
+            Assert.Equal("player1 to player2 test", player2DataReceiver.Data);
+
+            player2ServerClient.Send("player2 to player1 test");
+            Task.Delay(100).Wait();
+            Assert.Equal("player2 to player1 test", player1DataReceiver.Data);
+
         }
 
         static Task RecieveAsync(Socket? socket, DataReceiver dataReceiver)
@@ -39,6 +45,8 @@ namespace Pong.Server.Test
             var bytes = new byte[1024];
             var bytesCount = socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             dataReceiver.Data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
+            // storage is running out of space because the data is never deleted only added
+            RecieveAsync(socket, dataReceiver).Wait();
             return Task.CompletedTask;
         }
     }
