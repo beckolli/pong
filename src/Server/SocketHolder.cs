@@ -30,7 +30,7 @@ namespace Pong.Server
 
                 while (true)
                 {
-                    Console.WriteLine("wait for data for currentPlayer: " + _currentPlayer.Name);
+                    Console.WriteLine("waiting for data for currentPlayer: " + _currentPlayer.Name);
                     bytes = new byte[1024];
                     int bytesRec = _currentPlayer.Socket.Receive(bytes);
                     if (bytesRec == 0)

@@ -5,7 +5,7 @@ namespace Pong.Server.Test
 {
     public class UnitTests
     {
-        //diabled because the socket can't be nullable
+        //disabled because the socket can't be nullable
         // [Fact]
         // public void ConnectPlayerToGame()
         // {
