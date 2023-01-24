@@ -2,13 +2,14 @@ using System.Net;
 using System.Net.Sockets;
 using Pong.Server.Models;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Pong.Server
 {
     public class SocketListener
     {
-        Game? _game;
         Socket? _listener = null;
+        readonly List<Game> _gameList = new();
 
         public string StartMessage = new("start");
 
@@ -48,24 +49,34 @@ namespace Pong.Server
                 return;
             }
             var socket = _listener.Accept();
-
+            
             Console.WriteLine("connecting...");
             Player player = new(socket);
-            _game = ConnectPlayerToGame(player, _game);
-            var socketHolder = new SocketHolder(_game, player);
+            var lastOpenGame = _gameList.LastOrDefault(it => it.Player2 == null);
+            if (lastOpenGame == null)
+            {
+                lastOpenGame = ConnectPlayerToGame(player, null);
+                _gameList.Add(lastOpenGame);
+            }
+            else
+            {
+                ConnectPlayerToGame(player, lastOpenGame);
+            }
+            
+            var socketHolder = new SocketHolder(lastOpenGame, player);
             new Task(() => socketHolder.ReadDataAndSendToOpponent()).Start();
-            SendGameStartMessage();
+            SendGameStartMessage(lastOpenGame);
 
             Listen();
         }
 
-        void SendGameStartMessage()
+        void SendGameStartMessage(Game game)
         {
-            if (_game != null && _game.Player2 != null)
+            if (game.Player2 != null)
             {
                 byte[] startMessageBytes = Encoding.ASCII.GetBytes(StartMessage);
-                _game.Player1.Socket.Send(startMessageBytes);
-                _game.Player2.Socket.Send(startMessageBytes);
+                game.Player1.Socket.Send(startMessageBytes);
+                game.Player2.Socket.Send(startMessageBytes);
             }
         }
 
@@ -82,6 +93,6 @@ namespace Pong.Server
                 player.Name = "Player 2";
             }
             return currentGame;
-        }
+        }           
     }
 }

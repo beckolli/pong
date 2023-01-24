@@ -24,7 +24,6 @@ namespace Pong.Server.Test
             player2ServerClient.Connect();
             new Task(() => RecieveAsync(player2ServerClient.Socket, player2DataReceiver)).Start();
 
-            // both players need to connect (get a message from the server)
             Task.Delay(100).Wait();
             Assert.Equal("start", player1DataReceiver.Data);
             Assert.Equal("start", player2DataReceiver.Data);
@@ -36,6 +35,28 @@ namespace Pong.Server.Test
             player2ServerClient.Send("player2 to player1");
             Task.Delay(200).Wait();
             Assert.Equal("player2 to player1", player1DataReceiver.Data);
+
+            var player3ServerClient = new ServerClient();
+            var player3DataReceiver = new DataReceiver();
+            player3ServerClient.Connect();
+            new Task(() => RecieveAsync(player3ServerClient.Socket, player3DataReceiver)).Start();
+
+            var player4ServerClient = new ServerClient();
+            var player4DataReceiver = new DataReceiver();
+            player4ServerClient.Connect();
+            new Task(() => RecieveAsync(player4ServerClient.Socket, player4DataReceiver)).Start();
+
+            Task.Delay(100).Wait();
+            Assert.Equal("start", player3DataReceiver.Data);
+            Assert.Equal("start", player4DataReceiver.Data);
+
+            player3ServerClient.Send("player3 to player4");
+            Task.Delay(200).Wait();
+            Assert.Equal("player3 to player4", player4DataReceiver.Data);
+
+            player4ServerClient.Send("player4 to player3");
+            Task.Delay(200).Wait();
+            Assert.Equal("player4 to player3", player3DataReceiver.Data);
         }
 
         static Task RecieveAsync(Socket? socket, DataReceiver dataReceiver)
