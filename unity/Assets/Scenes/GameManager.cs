@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
             }
             // Power-Ups
             if(Player1Paddle.GetComponent<Paddle>().Opponent == false)
-                {
+            {
                 if(Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
                 {
                     WallPUStart();
