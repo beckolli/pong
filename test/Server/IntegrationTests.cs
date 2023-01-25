@@ -61,7 +61,7 @@ namespace Pong.Server.Test
 
         static Task RecieveAsync(Socket? socket, DataReceiver dataReceiver)
         {
-            if(socket == null) return Task.CompletedTask;
+            if (socket == null) return Task.CompletedTask;
             var bytes = new byte[1024];
             var bytesCount = socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             dataReceiver.Data = Encoding.ASCII.GetString(bytes, 0, bytesCount);

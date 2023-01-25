@@ -26,9 +26,9 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(GameManager.IsStarted == true)
+        if (GameManager.IsStarted == true)
         {
-         SpeedLimit();
+            SpeedLimit();
         }
         else
         {
@@ -45,12 +45,12 @@ public class Ball : MonoBehaviour
 
     private void SpeedLimit()
     {
-        if(GameManager.IsFinished == false)
+        if (GameManager.IsFinished == false)
+        {
+            if (GameManager.SpeedLimitTime <= GameManager.PlayedTime)
             {
-            if(GameManager.SpeedLimitTime <= GameManager.PlayedTime)
-                {
-                    GameManager.HideSpeedLimit();
-                }
+                GameManager.HideSpeedLimit();
+            }
 
             if (Rigidbody.velocity.x < 0)
             {

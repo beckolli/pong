@@ -10,11 +10,11 @@ public class Goal : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ball"))
         {
-            if(IsPlayer1Goal) 
+            if (IsPlayer1Goal)
             {
                 GameObject.Find("GameManager").GetComponent<GameManager>().Player2Scored();
             }
-            else 
+            else
             {
                 GameObject.Find("GameManager").GetComponent<GameManager>().Player1Scored();
             }
@@ -24,7 +24,7 @@ public class Goal : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame

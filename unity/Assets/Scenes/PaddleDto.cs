@@ -4,5 +4,5 @@ using System;
 public class PaddleDto
 {
     public float NextMovement;
-    public long NextMovementStartTime;    
+    public long NextMovementStartTime;
 }
