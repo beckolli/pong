@@ -33,7 +33,7 @@ public class Paddle : MonoBehaviour
         if (Opponent == false)
         {
             // fragt die aktuelle Taste ab (Pfeil hoch/runter)
-            _movement = Input.GetAxisRaw("Vertical"); 
+            _movement = Input.GetAxisRaw("Vertical");
             if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
             {
                 _nextMovementStartTime = GameManager.PlayedTime + 1000000;
@@ -42,7 +42,7 @@ public class Paddle : MonoBehaviour
                 _pastMovement = _movement;
             }
         }
-        if(_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= GameManager.PlayedTime) 
+        if (_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= GameManager.PlayedTime)
         {
             Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, (float)_nextMovement * _speed);
             _nextMovementStartTime = null;
@@ -56,14 +56,14 @@ public class Paddle : MonoBehaviour
         _nextMovementStartTime = nextMovementStartTime;
     }
     public void SendPaddleMovment(float nextMovment, long nextMovementStartTime)
+    {
+        var paddleDto = new PaddleDto()
         {
-            var paddleDto = new PaddleDto()
-            {
-                NextMovement = nextMovment,
-                NextMovementStartTime = nextMovementStartTime
-            };
-            var jsonString = JsonUtility.ToJson(paddleDto);
+            NextMovement = nextMovment,
+            NextMovementStartTime = nextMovementStartTime
+        };
+        var jsonString = JsonUtility.ToJson(paddleDto);
 
-            GameManager.ServerClient.Send(jsonString);
-        }
+        GameManager.ServerClient.Send(jsonString);
+    }
 }

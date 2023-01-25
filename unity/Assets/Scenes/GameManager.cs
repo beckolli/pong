@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    public PowerUp PowerUp;
 
     [Header("Ball")]
     public GameObject Ball;
@@ -60,9 +61,6 @@ public class GameManager : MonoBehaviour
     public GameObject E;
     public GameObject F;
     public GameObject MiddleWallPU;
-    bool _firePUUsed;
-    bool _wallPUUsed;
-    long? _wallPUTime = null;
 
     [Header("Server")]
     public GameObject ConnectionText;
@@ -107,7 +105,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // doesn't start until the second player connects
-        ConnectionStart();
+        GameStart();
         WinConditions();
         if (IsFinished == false)
         {
@@ -121,7 +119,7 @@ public class GameManager : MonoBehaviour
             {
                 TimerEnd();
             }
-            PowerUps();
+            PowerUp.PowerUps();
         }
     }
 
@@ -133,6 +131,7 @@ public class GameManager : MonoBehaviour
             var bytesCount = ServerClient.Socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             try
             {
+                // add a dto for Power-Ups?
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
                 var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
                 global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
@@ -202,27 +201,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //PU stands for Power Up
-    void WallPUStart()
-    {
-        MiddleWallPU.gameObject.SetActive(true);
-        _wallPUTime = PlayedTime + 50000000;
-    }
-
-    void WallPUEnd()
-    {
-        MiddleWallPU.gameObject.SetActive(false);
-        _wallPUUsed = true;
-        E.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
-    }
-
-    void FirePU()
-    {
-        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(10f, 0f);
-        _firePUUsed = true;
-        F.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
-    }
-
     void StartHide()
     {
         MiddleWallPU.gameObject.SetActive(false);
@@ -230,11 +208,11 @@ public class GameManager : MonoBehaviour
         Player2WonText.gameObject.SetActive(false);
         SpeedLimitText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
-        _firePUUsed = false;
-        _wallPUUsed = false;
+        PowerUp.FirePUUsed = false;
+        PowerUp.WallPUUsed = false;
     }
 
-    void ConnectionStart()
+    void GameStart()
     {
         if (IsStarted == false)
         {
@@ -259,23 +237,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void PowerUps()
-    {
-        if (Player1Paddle.GetComponent<Paddle>().Opponent == false)
-        {
-            if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
-            {
-                WallPUStart();
-            }
-            if (_wallPUTime < PlayedTime)
-            {
-                WallPUEnd();
-            }
-
-            if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
-            {
-                FirePU();
-            }
-        }
-    }
 }
