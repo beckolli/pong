@@ -99,27 +99,16 @@ public class GameManager : MonoBehaviour
         _clientSocket = ServerClient.Socket;
         StartTime = DateTime.UtcNow.Ticks;
         Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
-        new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
+        new Task(() => OpponentUpdateAsync(opponentPaddle)).Start();
         StartHide();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (IsStarted == false)
-        {
-            StartTime = DateTime.UtcNow.Ticks;
-        }
-        //Win Conditions
-        if (Player2Score == 20)
-        {
-            Player2Won();
-        }
-        else
-        if (Player1Score == 20)
-        {
-            Player1Won();
-        }
+        // doesn't start until the second player connects
+        ConnectionStart();
+        WinConditions();
         if (IsFinished == false)
         {
             PlayedTime = DateTime.UtcNow.Ticks - StartTime;
@@ -132,27 +121,11 @@ public class GameManager : MonoBehaviour
             {
                 TimerEnd();
             }
-            // Power-Ups
-            if (Player1Paddle.GetComponent<Paddle>().Opponent == false)
-            {
-                if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
-                {
-                    WallPUStart();
-                }
-                if (_wallPUTime < PlayedTime)
-                {
-                    WallPUEnd();
-                }
-
-                if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
-                {
-                    FirePU();
-                }
-            }
+            PowerUps();
         }
     }
 
-    public Task OpponentPaddleUpdateAsync(Paddle paddle)
+    public Task OpponentUpdateAsync(Paddle paddle)
     {
         while (true)
         {
@@ -177,10 +150,12 @@ public class GameManager : MonoBehaviour
     {
         SpeedLimitText.gameObject.SetActive(true);
     }
+
     public void HideSpeedLimit()
     {
         SpeedLimitText.gameObject.SetActive(false);
     }
+
     void Timer()
     {
         _timeInTimer = 180 - (PlayedTime / 10000000);
@@ -257,6 +232,50 @@ public class GameManager : MonoBehaviour
         TieText.gameObject.SetActive(false);
         _firePUUsed = false;
         _wallPUUsed = false;
-        ConnectionText.gameObject.SetActive(false);
+    }
+
+    void ConnectionStart()
+    {
+        if (IsStarted == false)
+        {
+            StartTime = DateTime.UtcNow.Ticks;
+        }
+        else
+        {
+            ConnectionText.gameObject.SetActive(false);
+        }
+    }
+
+    void WinConditions()
+    {
+        if (Player2Score == 20)
+        {
+            Player2Won();
+        }
+        else
+        if (Player1Score == 20)
+        {
+            Player1Won();
+        }
+    }
+
+    void PowerUps()
+    {
+        if (Player1Paddle.GetComponent<Paddle>().Opponent == false)
+        {
+            if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
+            {
+                WallPUStart();
+            }
+            if (_wallPUTime < PlayedTime)
+            {
+                WallPUEnd();
+            }
+
+            if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
+            {
+                FirePU();
+            }
+        }
     }
 }
