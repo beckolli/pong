@@ -97,27 +97,19 @@ public class GameManager : MonoBehaviour
         ServerClient = new ServerClient();
         ServerClient.Connect();
         _clientSocket = ServerClient.Socket;
+        StartTime = DateTime.UtcNow.Ticks;
         Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
-        StartTime = DateTime.UtcNow.Ticks;
-
-        MiddleWallPU.gameObject.SetActive(false);
-        Player1WonText.gameObject.SetActive(false);
-        Player2WonText.gameObject.SetActive(false);
-        SpeedLimitText.gameObject.SetActive(false);
-        TieText.gameObject.SetActive(false);
-        _firePUUsed = false;
-        _wallPUUsed = false;
-        ConnectionText.gameObject.SetActive(false);
-        // while(Player2.Connection != true)
-        // {
-        //      Game.Pause();
-        // }
+        StartHide();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (IsStarted == false)
+        {
+            StartTime = DateTime.UtcNow.Ticks;
+        }
         //Win Conditions
         if (Player2Score == 20)
         {
@@ -254,5 +246,17 @@ public class GameManager : MonoBehaviour
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(10f, 0f);
         _firePUUsed = true;
         F.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
+    }
+
+    void StartHide()
+    {
+        MiddleWallPU.gameObject.SetActive(false);
+        Player1WonText.gameObject.SetActive(false);
+        Player2WonText.gameObject.SetActive(false);
+        SpeedLimitText.gameObject.SetActive(false);
+        TieText.gameObject.SetActive(false);
+        _firePUUsed = false;
+        _wallPUUsed = false;
+        ConnectionText.gameObject.SetActive(false);
     }
 }
