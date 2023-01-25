@@ -56,13 +56,17 @@ public class GameManager : MonoBehaviour
     public GameObject Player2WonText;
     public GameObject TieText;
 
-    [Header ("Power-Ups")]
+    [Header("Power-Ups")]
     public GameObject E;
     public GameObject F;
     public GameObject MiddleWallPU;
     bool _firePUUsed;
     bool _wallPUUsed;
     long? _wallPUTime = null;
+
+    [Header("Server")]
+    public GameObject ConnectionText;
+    public bool IsStarted = false;
 
     public void Player1Scored()
     {
@@ -89,12 +93,14 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 120;
         ServerClient = new ServerClient();
         ServerClient.Connect();
         _clientSocket = ServerClient.Socket;
         Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
         new Task(() => OpponentPaddleUpdateAsync(opponentPaddle)).Start();
         StartTime = DateTime.UtcNow.Ticks;
+
         MiddleWallPU.gameObject.SetActive(false);
         Player1WonText.gameObject.SetActive(false);
         Player2WonText.gameObject.SetActive(false);
@@ -102,22 +108,27 @@ public class GameManager : MonoBehaviour
         TieText.gameObject.SetActive(false);
         _firePUUsed = false;
         _wallPUUsed = false;
+        ConnectionText.gameObject.SetActive(false);
+        // while(Player2.Connection != true)
+        // {
+        //      Game.Pause();
+        // }
     }
 
     // Update is called once per frame
     void Update()
     {
         //Win Conditions
-        if(Player2Score == 20)
+        if (Player2Score == 20)
         {
             Player2Won();
         }
         else
-        if(Player1Score == 20)
+        if (Player1Score == 20)
         {
             Player1Won();
         }
-        if(IsFinished == false)
+        if (IsFinished == false)
         {
             PlayedTime = DateTime.UtcNow.Ticks - StartTime;
             Timer();
@@ -130,18 +141,18 @@ public class GameManager : MonoBehaviour
                 TimerEnd();
             }
             // Power-Ups
-            if(Player1Paddle.GetComponent<Paddle>().Opponent == false)
+            if (Player1Paddle.GetComponent<Paddle>().Opponent == false)
             {
-                if(Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
+                if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
                 {
                     WallPUStart();
                 }
-                if(_wallPUTime < PlayedTime)
+                if (_wallPUTime < PlayedTime)
                 {
                     WallPUEnd();
                 }
 
-                if(Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
+                if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
                 {
                     FirePU();
                 }
@@ -183,10 +194,10 @@ public class GameManager : MonoBehaviour
         _timeInTimer = 180 - (PlayedTime / 10000000);
         _seconds = _timeInTimer % 60;
         _minutes = _timeInTimer / 60;
-        TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + _minutes.ToString() + ":" + _seconds.ToString();
+        TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: " + _minutes.ToString() + ":" + _seconds.ToString();
         if ((_seconds = _timeInTimer % 60) < 10)
         {
-            TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: "  + _minutes.ToString() + ":0" + _seconds.ToString();
+            TimerText.GetComponent<TextMeshProUGUI>().text = "Timer: " + _minutes.ToString() + ":0" + _seconds.ToString();
         }
     }
 
@@ -207,21 +218,21 @@ public class GameManager : MonoBehaviour
     void TimerEnd()
     {
         HideSpeedLimit();
-        if(Player1Score > Player2Score)
-            {
-                Player1Won();
-            }
-            else
+        if (Player1Score > Player2Score)
+        {
+            Player1Won();
+        }
+        else
             if (Player2Score > Player1Score)
-            {
-                Player2Won();
-            }
-            else 
-            {
-                IsFinished = true;
-                Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-                TieText.gameObject.SetActive(true);
-            }
+        {
+            Player2Won();
+        }
+        else
+        {
+            IsFinished = true;
+            Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
+            TieText.gameObject.SetActive(true);
+        }
     }
 
     //PU stands for Power Up
@@ -235,13 +246,13 @@ public class GameManager : MonoBehaviour
     {
         MiddleWallPU.gameObject.SetActive(false);
         _wallPUUsed = true;
-        E.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
+        E.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
     }
 
     void FirePU()
     {
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(10f, 0f);
         _firePUUsed = true;
-        F.gameObject.GetComponent<Image>().color = new Color32(123,123,123,255);
+        F.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
     }
 }

@@ -32,13 +32,13 @@ namespace Pong.Server
                 {
                     Console.WriteLine("waiting for data for currentPlayer: " + _currentPlayer.Name);
                     bytes = new byte[1024];
-                    int bytesRec = _currentPlayer.Socket.Receive(bytes);
-                    if (bytesRec == 0)
+                    int bytesReceived = _currentPlayer.Socket.Receive(bytes);
+                    if (bytesReceived == 0)
                     {
                         Disconnect();
                     }
-                    data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                    Console.WriteLine("Text received : {0}", Encoding.ASCII.GetString(bytes, 0, bytesRec));
+                    data = Encoding.ASCII.GetString(bytes, 0, bytesReceived);
+                    Console.WriteLine("Text received : {0}", Encoding.ASCII.GetString(bytes, 0, bytesReceived));
                     byte[] responseMessage = Encoding.ASCII.GetBytes(data);
                     // Send the response to the opposite player
                     if (_game.Player2 != null && _game.Player1 != null)

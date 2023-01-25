@@ -26,7 +26,14 @@ public class Ball : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(GameManager.IsStarted == true)
+        {
          SpeedLimit();
+        }
+        else
+        {
+            Reset();
+        }
     }
 
     private void Launch()
