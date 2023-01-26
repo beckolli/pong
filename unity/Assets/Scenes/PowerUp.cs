@@ -7,28 +7,41 @@ using UnityEngine.UI;
 
 public class PowerUp : MonoBehaviour
 {
-    public GameManager GameManager;    
-    public bool FirePUUsed;
-    public bool WallPUUsed;
-    public long? WallPUTime = null;
+    public GameManager GameManager;
+    bool _firePUUsed;
+    bool _wallPUUsed;
+    long? _wallPUTime = null;
 
+    void Start()
+    {
+        _firePUUsed = false;
+        _wallPUUsed = false;
+    }
     
-    public void PowerUps()
+    public void Update()
     {
         if (GameManager.Player1Paddle.GetComponent<Paddle>().Opponent == false)
         {
-            if (Input.GetKeyDown(KeyCode.E) && WallPUUsed == false)
+            if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
             {
-                WallPUStart();
+                _wallPUUsed = true;
+                if(_wallPUUsed == true)
+                {
+                    WallPUStart();
+                }      
             }
-            if (WallPUTime < GameManager.PlayedTime)
+            if (_wallPUTime < GameManager.PlayedTime)
             {
                 WallPUEnd();
             }
 
-            if (Input.GetKeyDown(KeyCode.F) && FirePUUsed == false)
+            if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
             {
+                _firePUUsed = true;
+                if(_firePUUsed == true)
+                {
                 FirePU();
+                }
             }
         }
     }
@@ -37,38 +50,38 @@ public class PowerUp : MonoBehaviour
     void WallPUStart()
     {
         GameManager.MiddleWallPU.gameObject.SetActive(true);
-        WallPUTime = GameManager.PlayedTime + 50000000;
+        _wallPUTime = GameManager.PlayedTime + 50000000;
     }
 
     void WallPUEnd()
     {
         GameManager.MiddleWallPU.gameObject.SetActive(false);
-        WallPUUsed = true;
         GameManager.E.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
     }
 
     void FirePU()
     {
         GameManager.Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(10f, 0f);
-        FirePUUsed = true;
         GameManager.F.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
     }
 
-    // void PowerUpUpdate(bool firePUUsed, bool wallPUUsed)
-    // {
-    //     FirePUUsed = firePuUsed;
-    //     WallPUUsed = wallPuUsed;
-    // }
+    public void PowerUpUpdate(bool firePUUsed, bool wallPUUsed, long wallPUTime)
+    {
+        _firePUUsed = firePUUsed;
+        _wallPUUsed = wallPUUsed;
+        _wallPUTime = wallPUTime;
+    }
 
-    // public void SendPowerUp(bool firePUUsed, bool wallPUUsed)
-    // {
-    //     var PowerUpDto = new PowerUpDto()
-    //     {
-    //         FirePUUsed = firePUUsed,
-    //         WallPUUsed = wallPUUsed
-    //     };
-    //     var jsonString = JsonUtility.ToJson(paddleDto);
+    public void SendPowerUp(bool firePUUsed, bool wallPUUsed, long wallPUTime)
+    {
+        var powerUpDto = new PowerUpDto()
+        {
+            FirePUUsed = firePUUsed,
+            WallPUUsed = wallPUUsed,
+            WallPUTime = wallPUTime
+        };
+        var jsonString = JsonUtility.ToJson(powerUpDto);
 
-    //     GameManager.ServerClient.Send(jsonString);
-    // }
+        GameManager.ServerClient.Send(jsonString);
+    }
 }

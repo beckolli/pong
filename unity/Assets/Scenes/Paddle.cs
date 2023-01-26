@@ -32,7 +32,7 @@ public class Paddle : MonoBehaviour
     {
         if (Opponent == false)
         {
-            // fragt die aktuelle Taste ab (Pfeil hoch/runter)
+            // looks at the input (arrow up/down)
             _movement = Input.GetAxisRaw("Vertical");
             if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
             {
@@ -50,7 +50,7 @@ public class Paddle : MonoBehaviour
         }
     }
 
-    public void OpponentUpdate(float nextMovement, long nextMovementStartTime)
+    public void OpponentPaddleUpdate(float nextMovement, long nextMovementStartTime)
     {
         _nextMovement = nextMovement;
         _nextMovementStartTime = nextMovementStartTime;

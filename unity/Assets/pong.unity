@@ -2595,8 +2595,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameManager: {fileID: 657072061}
-  FirePUUsed: 0
-  WallPUUsed: 0
 --- !u!1 &1153038164
 GameObject:
   m_ObjectHideFlags: 0

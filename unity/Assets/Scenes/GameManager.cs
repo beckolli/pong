@@ -119,7 +119,6 @@ public class GameManager : MonoBehaviour
             {
                 TimerEnd();
             }
-            PowerUp.PowerUps();
         }
     }
 
@@ -131,10 +130,11 @@ public class GameManager : MonoBehaviour
             var bytesCount = ServerClient.Socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
             try
             {
-                // add a dto for Power-Ups?
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
                 var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
-                global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                var powerUpDto = JsonUtility.FromJson<PowerUpDto>(data);
+                global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                global::UnityMainThreadDispatcher.Instance().Enqueue(() => PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
             }
             catch (Exception e)
             {
@@ -208,8 +208,6 @@ public class GameManager : MonoBehaviour
         Player2WonText.gameObject.SetActive(false);
         SpeedLimitText.gameObject.SetActive(false);
         TieText.gameObject.SetActive(false);
-        PowerUp.FirePUUsed = false;
-        PowerUp.WallPUUsed = false;
     }
 
     void GameStart()
