@@ -43,6 +43,7 @@ public class PowerUp : MonoBehaviour
                 FirePU();
                 }
             }
+            SendPowerUp();
         }
     }
 

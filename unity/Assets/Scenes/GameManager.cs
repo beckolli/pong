@@ -96,8 +96,8 @@ public class GameManager : MonoBehaviour
         ServerClient.Connect();
         _clientSocket = ServerClient.Socket;
         StartTime = DateTime.UtcNow.Ticks;
-        Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
-        new Task(() => OpponentUpdateAsync(opponentPaddle)).Start();
+        new Task(() => OpponentUpdateAsync()).Start();
+        new Task(() => SendUpdateAsync()).Start();
         StartHide();
     }
 
@@ -122,7 +122,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Task OpponentUpdateAsync(Paddle paddle)
+    public Task OpponentUpdateAsync()
     {
         while (true)
         {
@@ -131,10 +131,23 @@ public class GameManager : MonoBehaviour
             try
             {
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
-                var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
-                var powerUpDto = JsonUtility.FromJson<PowerUpDto>(data);
-                global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
-                global::UnityMainThreadDispatcher.Instance().Enqueue(() => PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
+                if (data.Contains("start"))
+                {
+                    IsStarted = true;
+                }
+                else
+                if (data.Contains("Movement"))
+                {
+                    Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
+                    var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                }
+                else
+                if (data.Contains("PU"))
+                {
+                    var powerUpDto = JsonUtility.FromJson<PowerUpDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
+                }
             }
             catch (Exception e)
             {
@@ -203,6 +216,7 @@ public class GameManager : MonoBehaviour
 
     void StartHide()
     {
+        ConnectionText.gameObject.SetActive(true);
         MiddleWallPU.gameObject.SetActive(false);
         Player1WonText.gameObject.SetActive(false);
         Player2WonText.gameObject.SetActive(false);
@@ -215,6 +229,8 @@ public class GameManager : MonoBehaviour
         if (IsStarted == false)
         {
             StartTime = DateTime.UtcNow.Ticks;
+            Player1Score = 0;
+            Player2Score = 0;
         }
         else
         {
