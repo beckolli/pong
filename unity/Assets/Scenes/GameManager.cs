@@ -97,7 +97,6 @@ public class GameManager : MonoBehaviour
         _clientSocket = ServerClient.Socket;
         StartTime = DateTime.UtcNow.Ticks;
         new Task(() => OpponentUpdateAsync()).Start();
-        new Task(() => SendUpdateAsync()).Start();
         StartHide();
     }
 
@@ -140,7 +139,7 @@ public class GameManager : MonoBehaviour
                 {
                     Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
                     var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
-                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => paddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => opponentPaddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
                 }
                 else
                 if (data.Contains("PU"))

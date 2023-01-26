@@ -43,7 +43,10 @@ public class PowerUp : MonoBehaviour
                 FirePU();
                 }
             }
-            SendPowerUp();
+            if(_wallPUTime != null)
+            {
+            SendPowerUp((bool)_firePUUsed, (bool)_wallPUUsed, (long)_wallPUTime);
+            }
         }
     }
 
