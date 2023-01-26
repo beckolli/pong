@@ -1,8 +1,8 @@
-using System;
+// using System;
 
-[Serializable]
-public class PowerUpDto
-{
-    public bool WallPUUsed;
-    public bool FirePuUsed;
-}
+// [Serializable]
+// public class PowerUpDto
+// {
+//     public bool WallPUUsed;
+//     public bool FirePuUsed;
+// }

@@ -54,21 +54,21 @@ public class PowerUp : MonoBehaviour
         GameManager.F.gameObject.GetComponent<Image>().color = new Color32(123, 123, 123, 255);
     }
 
-    void PowerUpUpdate(bool firePUUsed, bool wallPUUsed)
-    {
-        FirePUUsed = firePuUsed;
-        WallPUUsed = wallPuUsed;
-    }
+    // void PowerUpUpdate(bool firePUUsed, bool wallPUUsed)
+    // {
+    //     FirePUUsed = firePuUsed;
+    //     WallPUUsed = wallPuUsed;
+    // }
 
-    public void SendPowerUp(bool firePUUsed, bool wallPUUsed)
-    {
-        var PowerUpDto = new PowerUpDto()
-        {
-            FirePUUsed = firePUUsed,
-            WallPUUsed = wallPUUsed
-        };
-        var jsonString = JsonUtility.ToJson(paddleDto);
+    // public void SendPowerUp(bool firePUUsed, bool wallPUUsed)
+    // {
+    //     var PowerUpDto = new PowerUpDto()
+    //     {
+    //         FirePUUsed = firePUUsed,
+    //         WallPUUsed = wallPUUsed
+    //     };
+    //     var jsonString = JsonUtility.ToJson(paddleDto);
 
-        GameManager.ServerClient.Send(jsonString);
-    }
+    //     GameManager.ServerClient.Send(jsonString);
+    // }
 }
