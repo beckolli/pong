@@ -19,4 +19,4 @@ There a two triangles in the map on the middle line so the ball doesn't get stuc
 
 This game is not finished nor has a real name yet.
 
-[logo]:(C:\image.png)
+[logo]:(https://github.com/beckolli/pong/blob/main/image.png)
