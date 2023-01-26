@@ -49,7 +49,7 @@ namespace Pong.Server
                 return;
             }
             var socket = _listener.Accept();
-            
+
             Console.WriteLine("connecting...");
             Player player = new(socket);
             var lastOpenGame = _gameList.LastOrDefault(it => it.Player2 == null);
@@ -62,7 +62,7 @@ namespace Pong.Server
             {
                 ConnectPlayerToGame(player, lastOpenGame);
             }
-            
+
             var socketHolder = new SocketHolder(lastOpenGame, player);
             new Task(() => socketHolder.ReadDataAndSendToOpponent()).Start();
             SendGameStartMessage(lastOpenGame);
@@ -93,6 +93,6 @@ namespace Pong.Server
                 player.Name = "Player 2";
             }
             return currentGame;
-        }           
+        }
     }
 }

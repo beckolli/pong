@@ -55,6 +55,7 @@ public class Paddle : MonoBehaviour
         _nextMovement = nextMovement;
         _nextMovementStartTime = nextMovementStartTime;
     }
+
     public void SendPaddleMovment(float nextMovment, long nextMovementStartTime)
     {
         var paddleDto = new PaddleDto()
