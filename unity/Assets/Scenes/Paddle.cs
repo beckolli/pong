@@ -32,7 +32,7 @@ public class Paddle : MonoBehaviour
     {
         if (Opponent == false)
         {
-            // looks at the input (arrow up/down)
+            // looks at the input (w/s)
             _movement = Input.GetAxisRaw("Vertical");
             if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
             {

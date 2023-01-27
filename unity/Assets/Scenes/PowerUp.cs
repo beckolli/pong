@@ -17,7 +17,7 @@ public class PowerUp : MonoBehaviour
         _firePUUsed = false;
         _wallPUUsed = false;
     }
-    
+
     public void Update()
     {
         if (GameManager.Player1Paddle.GetComponent<Paddle>().Opponent == false)
@@ -25,10 +25,10 @@ public class PowerUp : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
             {
                 _wallPUUsed = true;
-                if(_wallPUUsed == true)
+                if (_wallPUUsed == true)
                 {
                     WallPUStart();
-                }      
+                }
             }
             if (_wallPUTime < GameManager.PlayedTime)
             {
@@ -38,14 +38,14 @@ public class PowerUp : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F) && _firePUUsed == false)
             {
                 _firePUUsed = true;
-                if(_firePUUsed == true)
+                if (_firePUUsed == true)
                 {
-                FirePU();
+                    FirePU();
                 }
             }
-            if(_wallPUTime != null)
+            if (_wallPUTime != null)
             {
-            SendPowerUp((bool)_firePUUsed, (bool)_wallPUUsed, (long)_wallPUTime);
+                SendPowerUp((bool)_firePUUsed, (bool)_wallPUUsed, (long)_wallPUTime);
             }
         }
     }

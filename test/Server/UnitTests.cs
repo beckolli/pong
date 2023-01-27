@@ -15,7 +15,7 @@ namespace Pong.Server.Test
         //     var game = SocketListener.ConnectPlayerToGame(player1, null);
         //     Assert.NotNull(game);
         //     Assert.NotNull(game.Player1);
-            
+
         //     game = SocketListener.ConnectPlayerToGame(player2, game);
         //     Assert.NotNull(game);
         //     Assert.NotNull(game.Player2);

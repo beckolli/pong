@@ -7,7 +7,7 @@ namespace Pong.Server
     {
         public static int Main()
         {
-            var socketListener  = new SocketListener();
+            var socketListener = new SocketListener();
             socketListener.StartServer();
             return 0;
         }
