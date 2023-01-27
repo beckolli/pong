@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using Pong.Server.Models;
 using System.Text;
-using System.Collections.Generic;
+using Pong.Server.Models;
 
 namespace Pong.Server
 {
@@ -18,7 +18,7 @@ namespace Pong.Server
             // Get Host IP Address that is used to establish a connection
             // In this case, we get one IP address of localhost that is IP : 127.0.0.1
             // If a host has multiple addresses, you will get a list of addresses
-            IPHostEntry host = Dns.GetHostEntry("localhost");
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = host.AddressList.FirstOrDefault(it => it.AddressFamily == AddressFamily.InterNetwork) ?? host.AddressList.First();
             IPEndPoint localEndPoint = new(ipAddress, 11000);
 
