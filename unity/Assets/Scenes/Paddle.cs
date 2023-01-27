@@ -48,20 +48,6 @@ public class Paddle : MonoBehaviour
             _nextMovementStartTime = null;
             _nextMovement = null;
         }
-
-        if (Opponent == true)
-        {
-            // looks at the input (arrow up/down)
-            _movement = Input.GetAxisRaw("Vertical2");
-            if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
-            {
-                _nextMovementStartTime = GameManager.PlayedTime + 1000000;
-                _nextMovement = _movement;
-                SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
-                _pastMovement = _movement;
-            }
-        }
-
     }
 
     public void OpponentPaddleUpdate(float nextMovement, long nextMovementStartTime)

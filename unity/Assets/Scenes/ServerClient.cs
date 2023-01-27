@@ -13,10 +13,9 @@ namespace Pong.Unity.Scenes
         {
             try
             {
-                IPHostEntry host = Dns.GetHostEntry("localhost");
+                IPHostEntry host = Dns.GetHostEntry("100.64.2.99");
                 IPAddress ipAddress = host.AddressList[0];
                 var remoteEP = new IPEndPoint(ipAddress, 11000);
-
                 Socket = new Socket(ipAddress.AddressFamily,
                     SocketType.Stream, ProtocolType.Tcp);
 

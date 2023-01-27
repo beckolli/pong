@@ -31,6 +31,12 @@ namespace Pong.Server
                 // Specify how many requests a Socket can listen before it gives Server busy response.
                 // We will listen 10 requests at a time
                 _listener.Listen(1);
+                foreach (var address in host.AddressList)
+                {
+                    Console.WriteLine("adress list entry: " + address);
+                }
+                Console.WriteLine("IpAdress: " + ipAddress);
+                Console.WriteLine("LocalEndPoint: " + localEndPoint);
 
                 Listen();
 
