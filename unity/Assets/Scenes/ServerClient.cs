@@ -1,8 +1,8 @@
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System;
-using System.Linq;
 
 namespace Pong.Unity.Scenes
 {
@@ -14,14 +14,11 @@ namespace Pong.Unity.Scenes
         {
             try
             {
-                IPHostEntry host = Dns.GetHostEntry("localhost");
+                IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
                 IPAddress ipAddress = host.AddressList.FirstOrDefault(it => it.AddressFamily == AddressFamily.InterNetwork) ?? host.AddressList.First();
                 var remoteEP = new IPEndPoint(ipAddress, 11000);
-                Socket = new Socket(ipAddress.AddressFamily,
-                    SocketType.Stream, ProtocolType.Tcp);
-
-                // Connect the socket to the remote endpoint. Catch any errors.
-
+                Socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                
                 Socket.Connect(remoteEP);
             }
             catch (Exception)

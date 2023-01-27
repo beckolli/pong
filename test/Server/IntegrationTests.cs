@@ -24,7 +24,7 @@ namespace Pong.Server.Test
             player2ServerClient.Connect();
             new Task(() => RecieveAsync(player2ServerClient.Socket, player2DataReceiver)).Start();
 
-            Task.Delay(100).Wait();
+            Task.Delay(200).Wait();
             Assert.Equal("start", player1DataReceiver.Data);
             Assert.Equal("start", player2DataReceiver.Data);
 
