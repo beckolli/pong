@@ -19,7 +19,7 @@ namespace Pong.Server
             // In this case, we get one IP address of localhost that is IP : 127.0.0.1
             // If a host has multiple addresses, you will get a list of addresses
             IPHostEntry host = Dns.GetHostEntry("localhost");
-            IPAddress ipAddress = host.AddressList.FirstOrDefault(it => it.ToString() == "::1") ?? host.AddressList.First();
+            IPAddress ipAddress = host.AddressList.FirstOrDefault(it => it.AddressFamily == AddressFamily.InterNetwork) ?? host.AddressList.First();
             IPEndPoint localEndPoint = new(ipAddress, 11000);
 
             try
