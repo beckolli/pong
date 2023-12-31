@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class Paddle : MonoBehaviour
 {
+    float _movement;
+    float _speed = 10;
+    float? _pastMovement;
+    float? _nextMovement;
+    long? _nextMovementStartTime;
+    
     public bool Opponent;
     public GameManager GameManager;
-
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
-    private float _movement;
-    private float _speed = 10;
-    private float? _pastMovement;
-    private float? _nextMovement;
-    private long? _nextMovementStartTime;
+
     // Start is called before the first frame update
     void Start()
     {
