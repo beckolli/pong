@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Pong.Unity.Scenes;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    Socket _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    Socket _clientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     public PowerUp PowerUp;
 
     [Header("Ball")]
@@ -66,26 +62,23 @@ public class GameManager : MonoBehaviour
     public GameObject ConnectionText;
     public bool IsStarted = false;
 
+    public void HideSpeedLimit()
+    {
+        SpeedLimitText.SetActive(false);
+    }
+
     public void Player1Scored()
     {
         Player1Score++;
         Player1Text.GetComponent<TextMeshProUGUI>().text = Player1Score.ToString();
-        ResetPosition();
+        ResetPaddlePosition();
     }
 
     public void Player2Scored()
     {
         Player2Score++;
         Player2Text.GetComponent<TextMeshProUGUI>().text = Player2Score.ToString();
-        ResetPosition();
-    }
-
-    private void ResetPosition()
-    {
-        Ball.GetComponent<Ball>().Reset();
-        Player1Paddle.GetComponent<Paddle>().Reset();
-        Player2Paddle.GetComponent<Paddle>().Reset();
-        HideSpeedLimit();
+        ResetPaddlePosition();
     }
 
     // Start is called before the first frame update
@@ -139,13 +132,15 @@ public class GameManager : MonoBehaviour
                 {
                     Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
                     var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
-                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => opponentPaddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        opponentPaddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
                 }
                 else
                 if (data.Contains("PU"))
                 {
                     var powerUpDto = JsonUtility.FromJson<PowerUpDto>(data);
-                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
                 }
             }
             catch (Exception e)
@@ -153,18 +148,63 @@ public class GameManager : MonoBehaviour
                 Debug.Log(e.Message);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public void ShowSpeedLimit()
     {
-        SpeedLimitText.gameObject.SetActive(true);
+        SpeedLimitText.SetActive(true);
     }
 
-    public void HideSpeedLimit()
+    void GameFinish()
     {
-        SpeedLimitText.gameObject.SetActive(false);
+        IsFinished = true;
+        ResetPaddlePosition();
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
+        TieText.SetActive(true);
+    }
+
+    void GameStart()
+    {
+        if (IsStarted == false)
+        {
+            StartTime = DateTime.UtcNow.Ticks;
+            Player1Score = 0;
+            Player2Score = 0;
+        }
+        else
+        {
+            ConnectionText.SetActive(false);
+        }
+    }
+
+    void Player1Won()
+    {
+        Player1WonText.SetActive(true);
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
+    }
+
+    void Player2Won()
+    {
+        Player2WonText.SetActive(true);
+        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
+    }
+
+    void ResetPaddlePosition()
+    {
+        Ball.GetComponent<Ball>().Reset();
+        Player1Paddle.GetComponent<Paddle>().Reset();
+        Player2Paddle.GetComponent<Paddle>().Reset();
+        HideSpeedLimit();
+    }
+
+    void StartHide()
+    {
+        ConnectionText.SetActive(true);
+        MiddleWallPU.SetActive(false);
+        Player1WonText.SetActive(false);
+        Player2WonText.SetActive(false);
+        SpeedLimitText.SetActive(false);
+        TieText.SetActive(false);
     }
 
     void Timer()
@@ -179,20 +219,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void Player2Won()
-    {
-        Player2WonText.gameObject.SetActive(true);
-        IsFinished = true;
-        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-    }
-
-    void Player1Won()
-    {
-        Player1WonText.gameObject.SetActive(true);
-        IsFinished = true;
-        Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-    }
-
     void TimerEnd()
     {
         HideSpeedLimit();
@@ -201,40 +227,11 @@ public class GameManager : MonoBehaviour
             Player1Won();
         }
         else
-            if (Player2Score > Player1Score)
+        if (Player2Score > Player1Score)
         {
             Player2Won();
         }
-        else
-        {
-            IsFinished = true;
-            Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-            TieText.gameObject.SetActive(true);
-        }
-    }
-
-    void StartHide()
-    {
-        ConnectionText.gameObject.SetActive(true);
-        MiddleWallPU.gameObject.SetActive(false);
-        Player1WonText.gameObject.SetActive(false);
-        Player2WonText.gameObject.SetActive(false);
-        SpeedLimitText.gameObject.SetActive(false);
-        TieText.gameObject.SetActive(false);
-    }
-
-    void GameStart()
-    {
-        if (IsStarted == false)
-        {
-            StartTime = DateTime.UtcNow.Ticks;
-            Player1Score = 0;
-            Player2Score = 0;
-        }
-        else
-        {
-            ConnectionText.gameObject.SetActive(false);
-        }
+        GameFinish();
     }
 
     void WinConditions()
@@ -242,11 +239,13 @@ public class GameManager : MonoBehaviour
         if (Player2Score == 20)
         {
             Player2Won();
+            GameFinish();
         }
         else
         if (Player1Score == 20)
         {
             Player1Won();
+            GameFinish();
         }
     }
 
