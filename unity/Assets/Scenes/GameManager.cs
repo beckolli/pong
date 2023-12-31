@@ -231,6 +231,10 @@ public class GameManager : MonoBehaviour
         {
             Player2Won();
         }
+        else
+        { 
+            TieText.SetActive(true);
+        }
         GameFinish();
     }
 
