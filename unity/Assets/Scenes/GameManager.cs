@@ -129,11 +129,11 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 if (data.Contains("Movement"))
-                {
-                    Paddle opponentPaddle = Player2Paddle.GetComponent(typeof(Paddle)) as Paddle;
+                {                    
                     var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
                     global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                        opponentPaddle.OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                        (Player2Paddle.GetComponent(typeof(Paddle)) as Paddle)
+                            .OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
                 }
                 else
                 if (data.Contains("PU"))
