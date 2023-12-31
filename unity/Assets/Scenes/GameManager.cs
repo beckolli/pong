@@ -9,6 +9,9 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     Socket _clientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    long _minutes;
+    long _seconds;
+    long _timeInTimer;
     public PowerUp PowerUp;
 
     [Header("Ball")]
@@ -44,9 +47,6 @@ public class GameManager : MonoBehaviour
     [Header("Timer")]
     public bool IsFinished = false;
     public GameObject TimerText;
-    long _minutes;
-    long _seconds;
-    long _timeInTimer;
 
     [Header("Win Texts")]
     public GameObject Player1WonText;
