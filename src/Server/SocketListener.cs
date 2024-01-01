@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using Pong.Server.Models;
 
 namespace Pong.Server
@@ -10,8 +10,6 @@ namespace Pong.Server
     {
         Socket? _listener = null;
         readonly List<Game> _gameList = new();
-
-        public string StartMessage = new("start");
 
         public void StartServer()
         {
@@ -76,13 +74,14 @@ namespace Pong.Server
             Listen();
         }
 
-        void SendGameStartMessage(Game game)
+        static void SendGameStartMessage(Game game)
         {
             if (game.Player2 != null)
             {
-                byte[] startMessageBytes = Encoding.ASCII.GetBytes(StartMessage);
-                game.Player1.Socket.Send(startMessageBytes);
-                game.Player2.Socket.Send(startMessageBytes);
+                game.Player1.Socket.Send(
+                    Encoding.ASCII.GetBytes(JsonSerializer.Serialize(new GameStart(1))));
+                game.Player2.Socket.Send(
+                    Encoding.ASCII.GetBytes(JsonSerializer.Serialize(new GameStart(2))));
             }
         }
 
