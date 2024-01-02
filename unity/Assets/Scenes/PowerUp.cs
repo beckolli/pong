@@ -20,7 +20,7 @@ public class PowerUp : MonoBehaviour
 
     public void Update()
     {
-        if (GameManager.Player1Paddle.GetComponent<Paddle>().Opponent == false)
+        if (GameManager.Player1Paddle.GetComponent<Paddle>().RightPaddle == false)
         {
             if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
             {
