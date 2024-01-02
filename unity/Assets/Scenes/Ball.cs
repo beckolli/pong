@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
@@ -7,20 +5,24 @@ public class Ball : MonoBehaviour
     public GameManager GameManager;
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
-    private float _startSpeed = 5;
+    float _startSpeed = 5;
+
+    public void Launch(float x, float y)
+    {
+        Rigidbody.velocity = new Vector2(_startSpeed * x, _startSpeed * y);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         StartPosition = transform.position;
-        Launch();
     }
 
     public void Reset()
     {
         Rigidbody.velocity = Vector2.zero;
         transform.position = StartPosition;
-        Launch();
+        Launch(1, 1);
     }
 
     // Update is called once per frame
@@ -36,14 +38,7 @@ public class Ball : MonoBehaviour
         }
     }
 
-    private void Launch()
-    {
-        float x = Random.Range(0, 2) == 0 ? -1 : 1;
-        float y = Random.Range(0, 2) == 0 ? -1 : 1;
-        Rigidbody.velocity = new Vector2(_startSpeed * x, _startSpeed * y);
-    }
-
-    private void SpeedLimit()
+    void SpeedLimit()
     {
         if (GameManager.IsFinished == false)
         {

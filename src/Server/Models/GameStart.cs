@@ -1,5 +1,3 @@
-using Microsoft.VisualBasic;
-
 namespace Pong.Server.Models;
 
 public class GameStart

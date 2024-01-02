@@ -91,16 +91,16 @@ public class GameManager : MonoBehaviour
         StartTime = DateTime.UtcNow.Ticks;
         new Task(() => OpponentUpdateAsync()).Start();
         StartHide();
+        Timer();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // doesn't start until the second player connects
-        GameStart();
-        WinConditions();
-        if (IsFinished == false)
+        // doesn't start until the second player connects        
+        if (IsStarted)
         {
+            WinConditions();
             PlayedTime = DateTime.UtcNow.Ticks - StartTime;
             Timer();
             if (_timeInTimer <= 0)
@@ -123,13 +123,14 @@ public class GameManager : MonoBehaviour
             try
             {
                 var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
-                if (data.Contains("start"))
+                if (data.Contains("PlayerNumber"))
                 {
-                    IsStarted = true;
+                    var gameStart = JsonUtility.FromJson<GameStartDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => GameStart(gameStart));
                 }
                 else
                 if (data.Contains("Movement"))
-                {                    
+                {
                     var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
                     global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
                         (Player2Paddle.GetComponent(typeof(Paddle)) as Paddle)
@@ -158,23 +159,21 @@ public class GameManager : MonoBehaviour
     void GameFinish()
     {
         IsFinished = true;
+        IsStarted = false;
         ResetPaddlePosition();
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
         TieText.SetActive(true);
     }
 
-    void GameStart()
+    void GameStart(GameStartDto gameStart)
     {
-        if (IsStarted == false)
-        {
-            StartTime = DateTime.UtcNow.Ticks;
-            Player1Score = 0;
-            Player2Score = 0;
-        }
-        else
-        {
-            ConnectionText.SetActive(false);
-        }
+        StartTime = DateTime.UtcNow.Ticks;
+        Player1Score = 0;
+        Player2Score = 0;
+        ConnectionText.SetActive(false);
+        IsFinished = false;
+        IsStarted = true;
+        Ball.GetComponent<Ball>().Launch(gameStart.BallX, gameStart.BallY);
     }
 
     void Player1Won()
@@ -232,7 +231,7 @@ public class GameManager : MonoBehaviour
             Player2Won();
         }
         else
-        { 
+        {
             TieText.SetActive(true);
         }
         GameFinish();

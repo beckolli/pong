@@ -10,7 +10,7 @@ public class Paddle : MonoBehaviour
     float? _pastMovement;
     float? _nextMovement;
     long? _nextMovementStartTime;
-    
+
     public bool Opponent;
     public GameManager GameManager;
     public Rigidbody2D Rigidbody;
@@ -31,23 +31,26 @@ public class Paddle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Opponent == false)
+        if (GameManager.IsStarted)
         {
-            // looks at the input (w/s)
-            _movement = Input.GetAxisRaw("Vertical");
-            if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
+            if (Opponent == false)
             {
-                _nextMovementStartTime = GameManager.PlayedTime + 1000000;
-                _nextMovement = _movement;
-                SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
-                _pastMovement = _movement;
+                // looks at the input (w/s)
+                _movement = Input.GetAxisRaw("Vertical");
+                if (_nextMovement == null && _nextMovementStartTime == null && _movement != _pastMovement)
+                {
+                    _nextMovementStartTime = GameManager.PlayedTime + 1000000;
+                    _nextMovement = _movement;
+                    SendPaddleMovment((float)_nextMovement, (long)_nextMovementStartTime);
+                    _pastMovement = _movement;
+                }
             }
-        }
-        if (_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= GameManager.PlayedTime)
-        {
-            Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, (float)_nextMovement * _speed);
-            _nextMovementStartTime = null;
-            _nextMovement = null;
+            if (_nextMovement != null && _nextMovementStartTime != null && _nextMovementStartTime <= GameManager.PlayedTime)
+            {
+                Rigidbody.velocity = new Vector2(Rigidbody.velocity.x, (float)_nextMovement * _speed);
+                _nextMovementStartTime = null;
+                _nextMovement = null;
+            }
         }
     }
 
