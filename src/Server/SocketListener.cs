@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Text.Json;
+using Pong.Server.Extensions;
 using Pong.Server.Models;
 
 namespace Pong.Server
@@ -27,7 +26,7 @@ namespace Pong.Server
                 // A Socket must be associated with an endpoint using the Bind method
                 _listener.Bind(localEndPoint);
                 // Specify how many requests a Socket can listen before it gives Server busy response.
-                // We will listen 10 requests at a time
+                // We will listen 1 requests at a time
                 _listener.Listen(1);
                 foreach (var address in host.AddressList)
                 {
@@ -52,52 +51,27 @@ namespace Pong.Server
             {
                 return;
             }
-            var socket = _listener.Accept();
+            var newPlayerSocket = _listener.Accept();
 
             Console.WriteLine("connecting...");
-            Player player = new(socket);
+            Player player = new(newPlayerSocket);
             var lastOpenGame = _gameList.LastOrDefault(it => it.Player2 == null);
             if (lastOpenGame == null)
             {
-                lastOpenGame = ConnectPlayerToGame(player, null);
+                lastOpenGame = player.ConnectPlayerToGame(null);
                 _gameList.Add(lastOpenGame);
             }
             else
             {
-                ConnectPlayerToGame(player, lastOpenGame);
+                player.ConnectPlayerToGame(lastOpenGame);
             }
 
             var socketHolder = new SocketHolder(lastOpenGame, player);
             new Task(() => socketHolder.ReadDataAndSendToOpponent()).Start();
-            SendGameStartMessage(lastOpenGame);
+            lastOpenGame?.SendGameStartMessage();
 
             Listen();
         }
 
-        static void SendGameStartMessage(Game game)
-        {
-            if (game.Player2 != null)
-            {
-                game.Player1.Socket.Send(
-                    Encoding.ASCII.GetBytes(JsonSerializer.Serialize(new GameStart(1))));
-                game.Player2.Socket.Send(
-                    Encoding.ASCII.GetBytes(JsonSerializer.Serialize(new GameStart(2))));
-            }
-        }
-
-        public static Game ConnectPlayerToGame(Player player, Game? game)
-        {
-            var currentGame = game ?? new Game(player);
-            if (game == null)
-            {
-                player.Name = "Player 1";
-            }
-            else
-            {
-                game.Player2 = player;
-                player.Name = "Player 2";
-            }
-            return currentGame;
-        }
     }
 }

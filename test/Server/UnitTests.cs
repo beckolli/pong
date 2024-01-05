@@ -1,3 +1,4 @@
+using Pong.Server.Extensions;
 using Pong.Server.Models;
 using Xunit;
 
@@ -9,15 +10,14 @@ namespace Pong.Server.Test
         [Fact]
         public void ConnectPlayerToGame()
         {
-            #pragma warning disable 8625
-            Player player1 = new (null);
-            Player player2 = new (null);
+            Player player1 = new();
+            Player player2 = new();
 
-            var game = SocketListener.ConnectPlayerToGame(player1, null);
+            var game = player1.ConnectPlayerToGame();
             Assert.NotNull(game);
             Assert.NotNull(game.Player1);
 
-            game = SocketListener.ConnectPlayerToGame(player2, game);
+            game = player2.ConnectPlayerToGame(game);
             Assert.NotNull(game);
             Assert.NotNull(game.Player2);
         }

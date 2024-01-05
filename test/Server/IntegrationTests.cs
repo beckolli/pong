@@ -1,73 +1,80 @@
-using System.Net.Sockets;
-using System.Text;
+using System.Net.WebSockets;
+using Microsoft.AspNetCore.TestHost;
 using Pong.Unity.Scenes;
 using Xunit;
 
 namespace Pong.Server.Test
 {
-    public class IntegrationTests
+    public class IntegrationTests : IClassFixture<TestFixture>
     {
-        [Fact]
-        public void Server()
+        readonly string _uri = "ws://localhost/ws";
+        readonly WebSocketClient _webSocketClient;
+
+        public IntegrationTests(TestFixture testFixture)
         {
-            var socketListener = new SocketListener();
-            new Task(() => socketListener.StartServer()).Start();
-            Task.Delay(100).Wait();
+            _webSocketClient = testFixture.WebSocketClient;
+        }
 
-            var player1ServerClient = new ServerClient();
+        [Fact]
+        public async Task Server()
+        {
             var player1DataReceiver = new DataReceiver();
-            player1ServerClient.Connect();
-            new Task(() => RecieveAsync(player1ServerClient.Socket, player1DataReceiver)).Start();
+            var player1ServerClient = await ConnectNewPlayerAsync();
+            new Task(() => RecieveAsync(player1ServerClient, player1DataReceiver).Wait()).Start();
+            Task.Delay(200).Wait();
 
-            var player2ServerClient = new ServerClient();
             var player2DataReceiver = new DataReceiver();
-            player2ServerClient.Connect();
-            new Task(() => RecieveAsync(player2ServerClient.Socket, player2DataReceiver)).Start();
+            var player2ServerClient = await ConnectNewPlayerAsync();
+            new Task(() => RecieveAsync(player2ServerClient, player2DataReceiver).Wait()).Start();
+            Task.Delay(200).Wait();
 
             Task.Delay(200).Wait();
-            Assert.Equal("start", player1DataReceiver.Data);
-            Assert.Equal("start", player2DataReceiver.Data);
+            Assert.Contains("PlayerNumber\":1", player1DataReceiver.Data);
+            Assert.Contains("PlayerNumber\":2", player2DataReceiver.Data);
 
-            player1ServerClient.Send("player1 to player2");
+            await player1ServerClient.SendAsync("player1 to player2");
             Task.Delay(200).Wait();
             Assert.Equal("player1 to player2", player2DataReceiver.Data);
 
-            player2ServerClient.Send("player2 to player1");
+            await player2ServerClient.SendAsync("player2 to player1");
             Task.Delay(200).Wait();
             Assert.Equal("player2 to player1", player1DataReceiver.Data);
 
-            var player3ServerClient = new ServerClient();
             var player3DataReceiver = new DataReceiver();
-            player3ServerClient.Connect();
-            new Task(() => RecieveAsync(player3ServerClient.Socket, player3DataReceiver)).Start();
+            var player3ServerClient = await ConnectNewPlayerAsync();            
+            new Task(() => RecieveAsync(player3ServerClient, player3DataReceiver).Wait()).Start();
 
-            var player4ServerClient = new ServerClient();
             var player4DataReceiver = new DataReceiver();
-            player4ServerClient.Connect();
-            new Task(() => RecieveAsync(player4ServerClient.Socket, player4DataReceiver)).Start();
+            var player4ServerClient = await ConnectNewPlayerAsync();            
+            new Task(() => RecieveAsync(player4ServerClient, player4DataReceiver).Wait()).Start();
 
-            Task.Delay(100).Wait();
-            Assert.Equal("start", player3DataReceiver.Data);
-            Assert.Equal("start", player4DataReceiver.Data);
+            Task.Delay(200).Wait();
+            Assert.Contains("PlayerNumber\":1", player3DataReceiver.Data);
+            Assert.Contains("PlayerNumber\":2", player4DataReceiver.Data);
 
-            player3ServerClient.Send("player3 to player4");
+            await player3ServerClient.SendAsync("player3 to player4");
             Task.Delay(200).Wait();
             Assert.Equal("player3 to player4", player4DataReceiver.Data);
 
-            player4ServerClient.Send("player4 to player3");
+            await player4ServerClient.SendAsync("player4 to player3");
             Task.Delay(200).Wait();
             Assert.Equal("player4 to player3", player3DataReceiver.Data);
         }
 
-        static Task RecieveAsync(Socket? socket, DataReceiver dataReceiver)
+        async Task<ServerClient> ConnectNewPlayerAsync()
         {
-            if (socket == null) return Task.CompletedTask;
-            var bytes = new byte[1024];
-            var bytesCount = socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
-            dataReceiver.Data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
+            WebSocket webSocket = await _webSocketClient.ConnectAsync(new Uri(_uri), CancellationToken.None);
+            return new ServerClient(webSocket);
+        }
+
+        static async Task RecieveAsync(ServerClient serverClient, DataReceiver dataReceiver)
+        {
+            if (serverClient == null)
+                return;
+            dataReceiver.Data = await serverClient.ReceiveAsync();
             // storage is running out of space because the data is never deleted only added
-            RecieveAsync(socket, dataReceiver).Wait();
-            return Task.CompletedTask;
+            _ = RecieveAsync(serverClient, dataReceiver);
+            return;
         }
     }
 
