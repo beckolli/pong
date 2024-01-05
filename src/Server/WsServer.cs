@@ -13,8 +13,7 @@ public class WsServer
 
     public void ConnectClient(WebSocket webSocket)
     {
-        Player player = new(webSocket);
-        Console.WriteLine($"{player.Name} add to game.");
+        Player player = new(webSocket);        
         var lastOpenGame = _gameList.LastOrDefault(it => it.Player2 == null);
         if (lastOpenGame == null)
         {
@@ -25,7 +24,7 @@ public class WsServer
         {
             player.ConnectPlayerToGame(lastOpenGame);
         }
-
+        Console.WriteLine($"{player.Name} added to game.");
         new WsConnectionHolder(lastOpenGame, player, webSocket).ReadDataAndSendToOpponent().Wait();
     }
 }
