@@ -1,20 +1,21 @@
+# https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-EXPOSE 11000
+WORKDIR /source
 
-WORKDIR /app
-COPY ../ ./
+# copy csproj and restore as distinct layers
+COPY *.csproj ./aspnetapp/
 
+WORKDIR /source/aspnetapp
 RUN dotnet restore
-RUN dotnet publish \
-	--self-contained true \
-	-c Release \
-	-o out \
-	-p:PublishTrimmed=true \
-	-p:PublishSingleFile=true
 
-# Build runtime image
+# copy everything else and build app
+COPY . ./aspnetapp/
+WORKDIR /source/aspnetapp
+RUN dotnet publish -c release -o /app --no-restore
+
+# final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
-ENV DOTNET_RUNNING_IN_CONTAINER=true
 WORKDIR /app
-COPY --from=build-env /app/out .
-ENTRYPOINT ["./"]
+COPY --from=build /app ./
+ENTRYPOINT ["dotnet", "pong.server.dll"]
+
