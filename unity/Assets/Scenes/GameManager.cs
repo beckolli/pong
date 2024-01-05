@@ -46,6 +46,8 @@ public class GameManager : MonoBehaviour
     public bool IsFinished = false;
     public GameObject TimerText;
 
+    public GameObject OpponentPaddle;
+
     [Header("Win Texts")]
     public GameObject Player1WonText;
     public GameObject Player2WonText;
@@ -136,7 +138,7 @@ public class GameManager : MonoBehaviour
                 {
                     var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
                     global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                        (Player2Paddle.GetComponent(typeof(Paddle)) as Paddle)
+                        (OpponentPaddle.GetComponent(typeof(Paddle)) as Paddle)
                             .OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
                 }
                 else
@@ -189,11 +191,13 @@ public class GameManager : MonoBehaviour
         {
             Player1Paddle.GetComponent<Paddle>().RightPaddle = false;
             Player2Paddle.GetComponent<Paddle>().RightPaddle = true;
+            OpponentPaddle = Player2Paddle;
         }
         else
         {
             Player1Paddle.GetComponent<Paddle>().RightPaddle = true;
             Player2Paddle.GetComponent<Paddle>().RightPaddle = false;
+            OpponentPaddle = Player1Paddle;
         }
     }
 
