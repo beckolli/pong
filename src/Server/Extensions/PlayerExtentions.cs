@@ -27,6 +27,7 @@ public static class PlayerExtentions
 
         if (player.WebSocket != null)
         {
+            Console.WriteLine($"{player.Name} send data: {message}");
             player.WebSocket?.SendAsync(
                 new ArraySegment<byte>(dataBytes, 0, dataBytes.Length),
                 System.Net.WebSockets.WebSocketMessageType.Text,
