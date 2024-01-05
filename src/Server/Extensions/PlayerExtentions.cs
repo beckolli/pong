@@ -31,7 +31,7 @@ public static class PlayerExtentions
             player.WebSocket?.SendAsync(
                 new ArraySegment<byte>(dataBytes, 0, dataBytes.Length),
                 System.Net.WebSockets.WebSocketMessageType.Text,
-                false,
+                true,
                 CancellationToken.None);
         }
 
