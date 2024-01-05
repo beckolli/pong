@@ -6,17 +6,19 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Pong.Unity.Scenes
 {
     public class ServerClient
     {
-        Uri _server_uri = new("ws://185.107.52.99/ws");
+        Uri _server_uri = new("ws://185.107.52.99:80/ws");
 
         WebSocket _webSocket;
 
         public ServerClient()
         {
+            _ = ConnectAsync();
         }
 
         public ServerClient(WebSocket webSocket)
@@ -30,19 +32,19 @@ namespace Pong.Unity.Scenes
             var webSocket = new ClientWebSocket();
             try
             {
-                //Debug.Log($"Try to connect to Server: {_server_uri}");
+                Debug.Log($"Try to connect to Server: {uri}");
                 _ = webSocket.ConnectAsync(uri, CancellationToken.None);
-                while (_webSocket.State == WebSocketState.Connecting)
+                while (webSocket.State == WebSocketState.Connecting)
                 {
                     //Debug.Log("Waiting to connect...");
                     await Task.Delay(500);
                 }
-                //Debug.Log($"Connect to Server. State: {_webSocket.State}");
+                Debug.Log($"Connect to Server. State: {webSocket.State}");
                 _webSocket = webSocket;
             }
             catch (Exception ex)
             {
-                //Debug.Log($"Exception: {ex.Message}");
+                Debug.Log($"Exception: {ex.Message}");
             }
         }
 

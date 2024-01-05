@@ -84,8 +84,6 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 120;
         ServerClient = new ServerClient();
-        ServerClient.ConnectAsync().GetAwaiter().GetResult();
-        ServerClient.SendAsync("test").GetAwaiter().GetResult();
         StartTime = DateTime.UtcNow.Ticks;
         new Task(() => OpponentUpdateAsync()).Start();
         StartHide();
