@@ -7,9 +7,9 @@ public class Ball : MonoBehaviour
     public Vector3 StartPosition;
     float _startSpeed = 5;
 
-    public void Launch(float x, float y)
+    public void Launch(float speedX, float speedY)
     {
-        Rigidbody.velocity = new Vector2(_startSpeed * x, _startSpeed * y);
+        Rigidbody.velocity = new Vector2(_startSpeed * speedX, _startSpeed * speedY);
     }
 
     // Start is called before the first frame update
@@ -22,7 +22,6 @@ public class Ball : MonoBehaviour
     {
         Rigidbody.velocity = Vector2.zero;
         transform.position = StartPosition;
-        Launch(1, 1);
     }
 
     // Update is called once per frame

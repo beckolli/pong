@@ -43,7 +43,7 @@ public class PowerUp : MonoBehaviour
                     FirePU();
                 }
             }
-            if (_wallPUTime != null)
+            if (_wallPUTime != null && _wallPUTime > GameManager.PlayedTime)
             {
                 SendPowerUp((bool)_firePUUsed, (bool)_wallPUUsed, (long)_wallPUTime);
             }

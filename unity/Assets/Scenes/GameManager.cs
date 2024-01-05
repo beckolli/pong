@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     long _seconds;
     long _timeInTimer;
     public PowerUp PowerUp;
+    public int PlayerNumber;
 
     [Header("Ball")]
     public GameObject Ball;
@@ -71,14 +72,14 @@ public class GameManager : MonoBehaviour
     {
         Player1Score++;
         Player1Text.GetComponent<TextMeshProUGUI>().text = Player1Score.ToString();
-        ResetPaddlePosition();
+        GoalReset();
     }
 
     public void Player2Scored()
     {
         Player2Score++;
         Player2Text.GetComponent<TextMeshProUGUI>().text = Player2Score.ToString();
-        ResetPaddlePosition();
+        GoalReset();
     }
 
     // Start is called before the first frame update
@@ -143,6 +144,14 @@ public class GameManager : MonoBehaviour
                     global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
                         PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
                 }
+                else
+                if (data.Contains("Speed"))
+                {
+                    var ballLaunchdto = JsonUtility.FromJson<BallLaunchDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => 
+                        (Ball.GetComponent(typeof(Ball)) as Ball)
+                            .Launch(ballLaunchdto.SpeedX, ballLaunchdto.SpeedY));
+                }
             }
             catch (Exception e)
             {
@@ -160,12 +169,13 @@ public class GameManager : MonoBehaviour
     {
         IsFinished = true;
         IsStarted = false;
-        ResetPaddlePosition();
+        GoalReset();
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
     }
 
     void GameStart(GameStartDto gameStart)
     {
+        PlayerNumber = gameStart.PlayerNumber;
         StartTime = DateTime.UtcNow.Ticks;
         Player1Score = 0;
         Player2Score = 0;
@@ -173,9 +183,27 @@ public class GameManager : MonoBehaviour
         IsFinished = false;
         IsStarted = true;
         Ball.GetComponent<Ball>().Launch(gameStart.BallX, gameStart.BallY);
+        if(gameStart.PlayerNumber== 1)
+        {
+            Player1Paddle.GetComponent<Paddle>().RightPaddle = false;
+            Player2Paddle.GetComponent<Paddle>().RightPaddle = true;
+        }
+        else
+        {
+            Player1Paddle.GetComponent<Paddle>().RightPaddle = true;
+            Player2Paddle.GetComponent<Paddle>().RightPaddle = false;
+        }
     }
 
-    void Player1Won()
+    void GoalReset()
+    {
+        Ball.GetComponent<Ball>().Reset();
+        Player1Paddle.GetComponent<Paddle>().Reset();
+        Player2Paddle.GetComponent<Paddle>().Reset();
+        HideSpeedLimit();
+    }
+    
+     void Player1Won()
     {
         Player1WonText.SetActive(true);
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
@@ -185,14 +213,6 @@ public class GameManager : MonoBehaviour
     {
         Player2WonText.SetActive(true);
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-    }
-
-    void ResetPaddlePosition()
-    {
-        Ball.GetComponent<Ball>().Reset();
-        Player1Paddle.GetComponent<Paddle>().Reset();
-        Player2Paddle.GetComponent<Paddle>().Reset();
-        HideSpeedLimit();
     }
 
     void StartHide()
