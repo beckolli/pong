@@ -14,6 +14,7 @@ public class WsServer
     public void ConnectClient(WebSocket webSocket)
     {
         Player player = new(webSocket);
+        Console.WriteLine($"{player.Name} add to game.");
         var lastOpenGame = _gameList.LastOrDefault(it => it.Player2 == null);
         if (lastOpenGame == null)
         {
