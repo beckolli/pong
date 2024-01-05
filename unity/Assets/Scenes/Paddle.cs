@@ -11,7 +11,7 @@ public class Paddle : MonoBehaviour
     float? _nextMovement;
     long? _nextMovementStartTime;
 
-    public bool Opponent;
+    public bool RightPaddle;
     public GameManager GameManager;
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
@@ -33,7 +33,7 @@ public class Paddle : MonoBehaviour
     {
         if (GameManager.IsStarted)
         {
-            if (Opponent == false)
+            if (RightPaddle == false)
             {
                 // looks at the input (w/s)
                 _movement = Input.GetAxisRaw("Vertical");
