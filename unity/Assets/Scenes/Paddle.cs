@@ -11,7 +11,7 @@ public class Paddle : MonoBehaviour
     float? _nextMovement;
     long? _nextMovementStartTime;
 
-    public bool RightPaddle;
+    public bool Opponent;
     public GameManager GameManager;
     public Rigidbody2D Rigidbody;
     public Vector3 StartPosition;
@@ -33,7 +33,7 @@ public class Paddle : MonoBehaviour
     {
         if (GameManager.IsStarted)
         {
-            if (RightPaddle == false)
+            if (Opponent == false)
             {
                 // looks at the input (w/s)
                 _movement = Input.GetAxisRaw("Vertical");
@@ -69,6 +69,6 @@ public class Paddle : MonoBehaviour
         };
         var jsonString = JsonUtility.ToJson(paddleDto);
 
-        GameManager.ServerClient.Send(jsonString);
+        _ = GameManager.ServerClient.SendAsync(jsonString);
     }
 }

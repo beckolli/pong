@@ -1,6 +1,4 @@
 using System;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 using Pong.Unity.Scenes;
 using TMPro;
@@ -8,7 +6,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    Socket _clientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     long _minutes;
     long _seconds;
     long _timeInTimer;
@@ -86,8 +83,8 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 120;
         ServerClient = new ServerClient();
-        ServerClient.Connect();
-        _clientSocket = ServerClient.Socket;
+        ServerClient.ConnectAsync().GetAwaiter().GetResult();
+        ServerClient.SendAsync("test").GetAwaiter().GetResult();
         StartTime = DateTime.UtcNow.Ticks;
         new Task(() => OpponentUpdateAsync()).Start();
         StartHide();
@@ -118,11 +115,9 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            var bytes = new byte[1024];
-            var bytesCount = ServerClient.Socket.ReceiveAsync(bytes, SocketFlags.None).GetAwaiter().GetResult();
+            var data = ServerClient.ReceiveAsync().GetAwaiter().GetResult();
             try
             {
-                var data = Encoding.ASCII.GetString(bytes, 0, bytesCount);
                 if (data.Contains("PlayerNumber"))
                 {
                     var gameStart = JsonUtility.FromJson<GameStartDto>(data);
@@ -162,6 +157,7 @@ public class GameManager : MonoBehaviour
         IsStarted = false;
         ResetPaddlePosition();
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
+        TieText.SetActive(true);
     }
 
     void GameStart(GameStartDto gameStart)
