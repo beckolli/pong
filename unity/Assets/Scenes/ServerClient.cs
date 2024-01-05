@@ -16,9 +16,10 @@ namespace Pong.Unity.Scenes
 
         WebSocket _webSocket;
 
+        public WebSocketState? State => _webSocket?.State;
+
         public ServerClient()
-        {
-            _ = ConnectAsync();
+        {            
         }
 
         public ServerClient(WebSocket webSocket)
@@ -36,7 +37,7 @@ namespace Pong.Unity.Scenes
                 _ = webSocket.ConnectAsync(uri, CancellationToken.None);
                 while (webSocket.State == WebSocketState.Connecting)
                 {
-                    //Debug.Log("Waiting to connect...");
+                    Debug.Log("Waiting to connect...");
                     await Task.Delay(500);
                 }
                 Debug.Log($"Connect to Server. State: {webSocket.State}");
@@ -67,6 +68,7 @@ namespace Pong.Unity.Scenes
                 var webSocketReceiveResult = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 return Encoding.UTF8.GetString(buffer)[..webSocketReceiveResult.Count];
             }
+            Debug.Log($"Websocket State invalid: State: {_webSocket.State}");
             return null;
         }
     }

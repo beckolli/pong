@@ -84,10 +84,18 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 120;
         ServerClient = new ServerClient();
-        StartTime = DateTime.UtcNow.Ticks;
-        new Task(() => OpponentUpdateAsync()).Start();
+        new Task(() => ServerClient.ConnectAsync().Wait()).Start();
+        while (ServerClient?.State != System.Net.WebSockets.WebSocketState.Open)
+        {
+            Debug.Log("Waiting for Server connection ...");
+            Task.Delay(1000);
+        }
+
+        new Task(() => OpponentUpdateAsync().Wait()).Start();
         StartHide();
         Timer();
+
+        ServerClient.SendAsync("test").Wait();
     }
 
     // Update is called once per frame
@@ -110,11 +118,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Task OpponentUpdateAsync()
+    public async Task OpponentUpdateAsync()
     {
+        Debug.Log($"Start OpponentUpdateAsync");
         while (true)
         {
-            var data = ServerClient.ReceiveAsync().GetAwaiter().GetResult();
+            var data = await ServerClient.ReceiveAsync();
             try
             {
                 if (data.Contains("PlayerNumber"))
@@ -141,7 +150,7 @@ public class GameManager : MonoBehaviour
                 if (data.Contains("Speed"))
                 {
                     var ballLaunchdto = JsonUtility.FromJson<BallLaunchDto>(data);
-                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => 
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
                         (Ball.GetComponent(typeof(Ball)) as Ball)
                             .Launch(ballLaunchdto.SpeedX, ballLaunchdto.SpeedY));
                 }
@@ -177,7 +186,7 @@ public class GameManager : MonoBehaviour
         IsFinished = false;
         IsStarted = true;
         Ball.GetComponent<Ball>().Launch(gameStart.BallX, gameStart.BallY);
-        if(gameStart.PlayerNumber== 1)
+        if (gameStart.PlayerNumber == 1)
         {
             Player1Paddle.GetComponent<Paddle>().RightPaddle = false;
             Player2Paddle.GetComponent<Paddle>().RightPaddle = true;
@@ -196,8 +205,8 @@ public class GameManager : MonoBehaviour
         Player2Paddle.GetComponent<Paddle>().Reset();
         HideSpeedLimit();
     }
-    
-     void Player1Won()
+
+    void Player1Won()
     {
         Player1WonText.SetActive(true);
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
