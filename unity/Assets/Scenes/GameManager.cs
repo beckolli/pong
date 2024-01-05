@@ -173,7 +173,6 @@ public class GameManager : MonoBehaviour
         IsStarted = false;
         GoalReset();
         Ball.GetComponent<Ball>().Rigidbody.velocity = new Vector2(0f, 0f);
-        TieText.SetActive(true);
     }
 
     void GameStart(GameStartDto gameStart)
