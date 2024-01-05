@@ -20,7 +20,7 @@ public class PowerUp : MonoBehaviour
 
     public void Update()
     {
-        if (GameManager.Player1Paddle.GetComponent<Paddle>().RightPaddle == false)
+        if (GameManager.Player1Paddle.GetComponent<Paddle>().Opponent == false)
         {
             if (Input.GetKeyDown(KeyCode.E) && _wallPUUsed == false)
             {
@@ -86,6 +86,6 @@ public class PowerUp : MonoBehaviour
         };
         var jsonString = JsonUtility.ToJson(powerUpDto);
 
-        GameManager.ServerClient.Send(jsonString);
+        _ = GameManager.ServerClient.SendAsync(jsonString);
     }
 }

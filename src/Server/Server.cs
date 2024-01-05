@@ -1,15 +1,25 @@
+namespace Pong.Server;
 
-namespace Pong.Server
+// Socket Listener acts as a server and listens to the incoming
+// messages on the specified port and protocol.
+public class PongServer
 {
-    // Socket Listener acts as a server and listens to the incoming
-    // messages on the specified port and protocol.
-    public class PongServer
+    public static void Main(string[] args)
     {
-        public static int Main()
+
+        _ = new Task(() => new SocketListener().StartServer());
+
+        var builder = Host.CreateDefaultBuilder(args);
+
+        builder.ConfigureWebHostDefaults(webBuilder =>
         {
-            var socketListener = new SocketListener();
-            socketListener.StartServer();
-            return 0;
-        }
+            webBuilder.ConfigureKestrel(serverOptions =>
+            {
+                // Set properties and call methods on options
+            })
+            .UseStartup<Startup>();
+        });
+
+        builder.Build().Run();
     }
 }

@@ -22,6 +22,7 @@ namespace Pong.Server
 
         public void ReadDataAndSendToOpponent()
         {
+            if (_currentPlayer.Socket == null) return;
             try
             {
                 // Incoming data from the client.
@@ -45,11 +46,11 @@ namespace Pong.Server
                     {
                         if (_currentPlayer == _game.Player1)
                         {
-                            _game.Player2.Socket.Send(responseMessage);
+                            _game.Player2.Socket?.Send(responseMessage);
                         }
                         else
                         {
-                            _game.Player1.Socket.Send(responseMessage);
+                            _game.Player1.Socket?.Send(responseMessage);
                         }
                     }
                 }
@@ -69,8 +70,11 @@ namespace Pong.Server
             Console.WriteLine("disconnecting...");
             try
             {
-                _currentPlayer.Socket.Shutdown(SocketShutdown.Send);
-                _currentPlayer.Socket.Close();
+                if (_currentPlayer?.Socket != null)
+                {
+                    _currentPlayer.Socket.Shutdown(SocketShutdown.Send);
+                    _currentPlayer.Socket.Close();
+                }
             }
             catch (Exception) { }
         }

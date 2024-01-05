@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AssemblyName>Pong.Server.Test</AssemblyName>
@@ -9,7 +9,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>		
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />		
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />	
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.11" />	
 		<PackageReference Include="xunit" Version="2.4.2"/>
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<PrivateAssets>all</PrivateAssets>
@@ -19,8 +20,7 @@
 
 	<ItemGroup>		
 		<ProjectReference Include="..\..\src\Server\Server.csproj" />
+		<ProjectReference Include="..\..\unity\Assembly-CSharp.csproj" />
 	</ItemGroup>
-	<ItemGroup>		
-		<Compile Include="..\..\unity\Assets\Scenes\ServerClient.cs" />
-	</ItemGroup>
+	
 </Project>
