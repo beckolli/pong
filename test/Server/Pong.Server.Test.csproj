@@ -20,7 +20,9 @@
 
 	<ItemGroup>		
 		<ProjectReference Include="..\..\src\Server\Server.csproj" />
-		<ProjectReference Include="..\..\unity\Assembly-CSharp.csproj" />
 	</ItemGroup>
-	
+	<ItemGroup>		
+		<Compile Include="..\..\unity\Assets\Scenes\ServerClient.cs" />
+	</ItemGroup>
+
 </Project>

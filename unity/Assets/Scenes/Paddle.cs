@@ -69,6 +69,6 @@ public class Paddle : MonoBehaviour
         };
         var jsonString = JsonUtility.ToJson(paddleDto);
 
-        _ = GameManager.ServerClient.SendAsync(jsonString);
+        GameManager.ServerClient.Send(jsonString);
     }
 }

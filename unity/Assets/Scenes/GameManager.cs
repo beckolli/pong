@@ -86,18 +86,12 @@ public class GameManager : MonoBehaviour
     {
         Application.targetFrameRate = 120;
         ServerClient = new ServerClient();
-        new Task(() => ServerClient.ConnectAsync().Wait()).Start();
-        while (ServerClient?.State != System.Net.WebSockets.WebSocketState.Open)
-        {
-            Debug.Log("Waiting for Server connection ...");
-            Task.Delay(1000);
-        }
+        ServerClient.Connect();
 
-        new Task(() => OpponentUpdateAsync().Wait()).Start();
+        //new Task(() => OpponentUpdateAsync().Wait()).Start();
+        AddOpponentMessageReceiver();
         StartHide();
         Timer();
-
-        ServerClient.SendAsync("test").Wait();
     }
 
     // Update is called once per frame
@@ -118,6 +112,49 @@ public class GameManager : MonoBehaviour
                 TimerEnd();
             }
         }
+    }
+
+    public void AddOpponentMessageReceiver()
+    {
+        ServerClient.WebSocket.OnMessage += (sender, e) =>
+        {
+            var data = e.Data;
+            try
+            {
+                if (data.Contains("PlayerNumber"))
+                {
+                    var gameStart = JsonUtility.FromJson<GameStartDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() => GameStart(gameStart));
+                }
+                else
+                if (data.Contains("Movement"))
+                {
+                    var paddleDto = JsonUtility.FromJson<PaddleDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        (OpponentPaddle.GetComponent(typeof(Paddle)) as Paddle)
+                            .OpponentPaddleUpdate(paddleDto.NextMovement, paddleDto.NextMovementStartTime));
+                }
+                else
+                if (data.Contains("PU"))
+                {
+                    var powerUpDto = JsonUtility.FromJson<PowerUpDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        PowerUp.PowerUpUpdate(powerUpDto.FirePUUsed, powerUpDto.WallPUUsed, powerUpDto.WallPUTime));
+                }
+                else
+                if (data.Contains("Speed"))
+                {
+                    var ballLaunchdto = JsonUtility.FromJson<BallLaunchDto>(data);
+                    global::UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        (Ball.GetComponent(typeof(Ball)) as Ball)
+                            .Launch(ballLaunchdto.SpeedX, ballLaunchdto.SpeedY));
+                }
+            }
+            catch (Exception exception)
+            {
+                Debug.Log(exception.Message);
+            }
+        };
     }
 
     public async Task OpponentUpdateAsync()

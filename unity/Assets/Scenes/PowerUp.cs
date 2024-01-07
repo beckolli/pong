@@ -86,6 +86,6 @@ public class PowerUp : MonoBehaviour
         };
         var jsonString = JsonUtility.ToJson(powerUpDto);
 
-        _ = GameManager.ServerClient.SendAsync(jsonString);
+        GameManager.ServerClient.Send(jsonString);
     }
 }
